@@ -1,0 +1,14 @@
+# Python virtual environment & caches
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables & secrets
+.env
+
+# macOS system files
+.DS_Store
+
+# Local backup snapshots
+.backups/

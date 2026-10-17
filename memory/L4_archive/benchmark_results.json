@@ -1,0 +1,258 @@
+{
+  "evaluation_mode": "RULE_MECHANISM_SIMULATION",
+  "dataset_size": 30,
+  "real_dataset_size": 12,
+  "summary": {
+    "B1: Long-History Context (Full-Text Aggregation)": {
+      "t5_acc_pct": 0.0,
+      "precision_pct": 0.0,
+      "recall_pct": 0.0,
+      "f1_pct": 0.0,
+      "reversal_acc_pct": 0.0,
+      "priced_in_acc_pct": 0.0,
+      "contagion_acc_pct": 0.0,
+      "avg_prompt_tokens": 15759
+    },
+    "B2: Top-K Chunk Retrieval (Cosine RAG)": {
+      "t5_acc_pct": 30.0,
+      "precision_pct": 0.0,
+      "recall_pct": 0.0,
+      "f1_pct": 0.0,
+      "reversal_acc_pct": 0.0,
+      "priced_in_acc_pct": 20.0,
+      "contagion_acc_pct": 70.0,
+      "avg_prompt_tokens": 1378
+    },
+    "Ablation A: w/o Invalidation Only": {
+      "t5_acc_pct": 66.7,
+      "precision_pct": 100.0,
+      "recall_pct": 30.0,
+      "f1_pct": 46.2,
+      "reversal_acc_pct": 0.0,
+      "priced_in_acc_pct": 100.0,
+      "contagion_acc_pct": 100.0,
+      "avg_prompt_tokens": 412
+    },
+    "Ablation B: w/o Priced-in Only": {
+      "t5_acc_pct": 70.0,
+      "precision_pct": 100.0,
+      "recall_pct": 70.0,
+      "f1_pct": 82.4,
+      "reversal_acc_pct": 100.0,
+      "priced_in_acc_pct": 10.0,
+      "contagion_acc_pct": 100.0,
+      "avg_prompt_tokens": 389
+    },
+    "Ablation C1: w/o KG Edges (Node-Only)": {
+      "t5_acc_pct": 66.7,
+      "precision_pct": 100.0,
+      "recall_pct": 66.7,
+      "f1_pct": 80.0,
+      "reversal_acc_pct": 100.0,
+      "priced_in_acc_pct": 100.0,
+      "contagion_acc_pct": 0.0,
+      "avg_prompt_tokens": 344
+    },
+    "Ablation C2: 1-Hop KG Only (cutoff=1)": {
+      "t5_acc_pct": 80.0,
+      "precision_pct": 100.0,
+      "recall_pct": 80.0,
+      "f1_pct": 88.9,
+      "reversal_acc_pct": 100.0,
+      "priced_in_acc_pct": 100.0,
+      "contagion_acc_pct": 40.0,
+      "avg_prompt_tokens": 368
+    },
+    "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+      "t5_acc_pct": 100.0,
+      "precision_pct": 100.0,
+      "recall_pct": 100.0,
+      "f1_pct": 100.0,
+      "reversal_acc_pct": 100.0,
+      "priced_in_acc_pct": 100.0,
+      "contagion_acc_pct": 100.0,
+      "avg_prompt_tokens": 419
+    }
+  },
+  "by_scenario": {
+    "B1: Long-History Context (Full-Text Aggregation)": {
+      "TEMPORAL_REVERSAL": 0.0,
+      "PRICED_IN_TRAP": 0.0,
+      "SECTOR_CONTAGION": 0.0
+    },
+    "B2: Top-K Chunk Retrieval (Cosine RAG)": {
+      "TEMPORAL_REVERSAL": 0.0,
+      "PRICED_IN_TRAP": 20.0,
+      "SECTOR_CONTAGION": 70.0
+    },
+    "Ablation A: w/o Invalidation Only": {
+      "TEMPORAL_REVERSAL": 0.0,
+      "PRICED_IN_TRAP": 100.0,
+      "SECTOR_CONTAGION": 100.0
+    },
+    "Ablation B: w/o Priced-in Only": {
+      "TEMPORAL_REVERSAL": 100.0,
+      "PRICED_IN_TRAP": 10.0,
+      "SECTOR_CONTAGION": 100.0
+    },
+    "Ablation C1: w/o KG Edges (Node-Only)": {
+      "TEMPORAL_REVERSAL": 100.0,
+      "PRICED_IN_TRAP": 100.0,
+      "SECTOR_CONTAGION": 0.0
+    },
+    "Ablation C2: 1-Hop KG Only (cutoff=1)": {
+      "TEMPORAL_REVERSAL": 100.0,
+      "PRICED_IN_TRAP": 100.0,
+      "SECTOR_CONTAGION": 40.0
+    },
+    "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+      "TEMPORAL_REVERSAL": 100.0,
+      "PRICED_IN_TRAP": 100.0,
+      "SECTOR_CONTAGION": 100.0
+    }
+  },
+  "real_12_summary": {
+    "B1: Long-History Context (Full-Text Aggregation)": {
+      "t5_acc_pct": 41.7,
+      "precision_pct": 0.0,
+      "recall_pct": 0.0,
+      "f1_pct": 0.0,
+      "reversal_acc_pct": 66.7,
+      "priced_in_acc_pct": 0.0,
+      "contagion_acc_pct": 33.3,
+      "avg_prompt_tokens": 1080
+    },
+    "B2: Top-K Chunk Retrieval (Cosine RAG)": {
+      "t5_acc_pct": 50.0,
+      "precision_pct": 0.0,
+      "recall_pct": 0.0,
+      "f1_pct": 0.0,
+      "reversal_acc_pct": 66.7,
+      "priced_in_acc_pct": 0.0,
+      "contagion_acc_pct": 66.7,
+      "avg_prompt_tokens": 1250
+    },
+    "Ablation A: w/o Invalidation Only": {
+      "t5_acc_pct": 50.0,
+      "precision_pct": 100.0,
+      "recall_pct": 25.0,
+      "f1_pct": 40.0,
+      "reversal_acc_pct": 0.0,
+      "priced_in_acc_pct": 100.0,
+      "contagion_acc_pct": 100.0,
+      "avg_prompt_tokens": 454
+    },
+    "Ablation B: w/o Priced-in Only": {
+      "t5_acc_pct": 75.0,
+      "precision_pct": 100.0,
+      "recall_pct": 75.0,
+      "f1_pct": 85.7,
+      "reversal_acc_pct": 100.0,
+      "priced_in_acc_pct": 0.0,
+      "contagion_acc_pct": 100.0,
+      "avg_prompt_tokens": 432
+    },
+    "Ablation C1: w/o KG Edges (Node-Only)": {
+      "t5_acc_pct": 75.0,
+      "precision_pct": 100.0,
+      "recall_pct": 75.0,
+      "f1_pct": 85.7,
+      "reversal_acc_pct": 100.0,
+      "priced_in_acc_pct": 100.0,
+      "contagion_acc_pct": 0.0,
+      "avg_prompt_tokens": 364
+    },
+    "Ablation C2: 1-Hop KG Only (cutoff=1)": {
+      "t5_acc_pct": 83.3,
+      "precision_pct": 100.0,
+      "recall_pct": 75.0,
+      "f1_pct": 85.7,
+      "reversal_acc_pct": 100.0,
+      "priced_in_acc_pct": 100.0,
+      "contagion_acc_pct": 33.3,
+      "avg_prompt_tokens": 378
+    },
+    "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+      "t5_acc_pct": 100.0,
+      "precision_pct": 100.0,
+      "recall_pct": 100.0,
+      "f1_pct": 100.0,
+      "reversal_acc_pct": 100.0,
+      "priced_in_acc_pct": 100.0,
+      "contagion_acc_pct": 100.0,
+      "avg_prompt_tokens": 462
+    }
+  },
+  "real_12_by_scenario": {
+    "B1: Long-History Context (Full-Text Aggregation)": {
+      "TEMPORAL_REVERSAL": 66.7,
+      "PRICED_IN_TRAP": 0.0,
+      "SECTOR_CONTAGION": 33.3
+    },
+    "B2: Top-K Chunk Retrieval (Cosine RAG)": {
+      "TEMPORAL_REVERSAL": 66.7,
+      "PRICED_IN_TRAP": 0.0,
+      "SECTOR_CONTAGION": 66.7
+    },
+    "Ablation A: w/o Invalidation Only": {
+      "TEMPORAL_REVERSAL": 0.0,
+      "PRICED_IN_TRAP": 100.0,
+      "SECTOR_CONTAGION": 100.0
+    },
+    "Ablation B: w/o Priced-in Only": {
+      "TEMPORAL_REVERSAL": 100.0,
+      "PRICED_IN_TRAP": 0.0,
+      "SECTOR_CONTAGION": 100.0
+    },
+    "Ablation C1: w/o KG Edges (Node-Only)": {
+      "TEMPORAL_REVERSAL": 100.0,
+      "PRICED_IN_TRAP": 100.0,
+      "SECTOR_CONTAGION": 0.0
+    },
+    "Ablation C2: 1-Hop KG Only (cutoff=1)": {
+      "TEMPORAL_REVERSAL": 100.0,
+      "PRICED_IN_TRAP": 100.0,
+      "SECTOR_CONTAGION": 33.3
+    },
+    "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+      "TEMPORAL_REVERSAL": 100.0,
+      "PRICED_IN_TRAP": 100.0,
+      "SECTOR_CONTAGION": 100.0
+    }
+  },
+  "sensitivity_grid": {
+    "alphas": [
+      0.0,
+      0.4,
+      0.8,
+      1.0
+    ],
+    "lambdas": [
+      0.3,
+      0.6,
+      0.9
+    ],
+    "matrix": {
+      "alpha=0.0": {
+        "lambda=0.3": 70.0,
+        "lambda=0.6": 70.0,
+        "lambda=0.9": 70.0
+      },
+      "alpha=0.4": {
+        "lambda=0.3": 100.0,
+        "lambda=0.6": 100.0,
+        "lambda=0.9": 100.0
+      },
+      "alpha=0.8": {
+        "lambda=0.3": 100.0,
+        "lambda=0.6": 100.0,
+        "lambda=0.9": 100.0
+      },
+      "alpha=1.0": {
+        "lambda=0.3": 100.0,
+        "lambda=0.6": 100.0,
+        "lambda=0.9": 100.0
+      }
+    }
+  }
+}

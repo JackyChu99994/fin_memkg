@@ -1,0 +1,77 @@
+{
+  "stock_code": "002594.SZ",
+  "stock_name": "比亚迪",
+  "last_updated": "2026-10-14",
+  "market_regime": {
+    "price_percentile_60d": 0.736,
+    "return_20d_pct": 18.5,
+    "turnover_anomaly": "HIGH",
+    "net_sentiment_score": 0.8217
+  },
+  "thesis_nodes": [
+    {
+      "id": "TH_01",
+      "type": "BULLISH_LOGIC",
+      "title": "比亚迪核心产品需求与批价景气回升",
+      "category": "DEMAND",
+      "status": "ACTIVE",
+      "weight": 0.85,
+      "confidence": 0.82,
+      "created_at": "2026-10-14",
+      "updated_at": "2026-10-14",
+      "priced_in_ratio": 0.3,
+      "status_reason": "事件印证：公司披露2026三季报净利润同比预增145%，但近20日股价已大涨28%",
+      "superseded_by": null,
+      "evidence_pointers": [
+        "#EV_20261014"
+      ],
+      "invalidation_condition": "终端动销或核心产品价格跌破阈值"
+    },
+    {
+      "id": "TH_02",
+      "type": "BEARISH_LOGIC",
+      "title": "比亚迪宏观消费复苏斜率与渠道库存压力",
+      "category": "MACRO",
+      "status": "ACTIVE",
+      "weight": 0.4,
+      "confidence": 0.65,
+      "created_at": "2026-10-14",
+      "updated_at": "2026-10-14",
+      "priced_in_ratio": 0.3,
+      "status_reason": null,
+      "superseded_by": null,
+      "evidence_pointers": [
+        "#EV_20261014"
+      ],
+      "invalidation_condition": "旺季渠道库存周转天数降至安全线内"
+    },
+    {
+      "id": "TH_03",
+      "type": "BULLISH_LOGIC",
+      "title": "公司披露2026三季报净利润同比预增145%，但近20日股价已大涨28%",
+      "category": "CATALYST",
+      "status": "ACTIVE",
+      "weight": 0.72,
+      "confidence": 0.85,
+      "created_at": "2026-10-14",
+      "updated_at": "2026-10-14",
+      "priced_in_ratio": 0.25,
+      "status_reason": null,
+      "superseded_by": null,
+      "evidence_pointers": [
+        "#EV_20261014"
+      ],
+      "invalidation_condition": "终端价格或销量再度回落"
+    }
+  ],
+  "edges": [
+    {
+      "source": "TH_01",
+      "target": "TH_02",
+      "relation": "INVALIDATES",
+      "hop": 1,
+      "transmission_sign": "-1",
+      "description": "终端批价回暖直接缓解渠道库存担忧"
+    }
+  ]
+}

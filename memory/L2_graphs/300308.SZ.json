@@ -1,0 +1,241 @@
+{
+  "stock_code": "300308.SZ",
+  "stock_name": "中际旭创",
+  "last_updated": "2026-10-12",
+  "market_regime": {
+    "close_rank_pct_60d": 0.8833,
+    "range_pos_60d": 0.7346,
+    "return_20d_pct": 18.49,
+    "turnover_anomaly": "HIGH",
+    "net_sentiment_score": 1.3617
+  },
+  "thesis_nodes": [
+    {
+      "id": "TH_01",
+      "type": "BULLISH_LOGIC",
+      "title": "1.6T光模块Q4规模量产与北美CSP订单放量",
+      "category": "PRODUCT_CYCLE",
+      "status": "ACTIVE",
+      "weight": 0.85,
+      "confidence": 0.9,
+      "created_at": "2026-09-18",
+      "updated_at": "2026-10-12",
+      "priced_in_ratio": 0.25,
+      "status_reason": "北美大客户1.6T排产上修，硅光方案良率超预期",
+      "superseded_by": null,
+      "evidence_pointers": [
+        "EV_20260918_01_b7c2",
+        "EV_20261012_01_d9e4"
+      ],
+      "invalidation_condition": "北美四大CSP季度资本开支环比下滑或1.6T出货推迟至2027Q2后"
+    },
+    {
+      "id": "TH_02",
+      "type": "BULLISH_LOGIC",
+      "title": "2026半年报800G光模块业绩高增兑现",
+      "category": "EARNINGS",
+      "status": "PRICED_IN",
+      "weight": 0.75,
+      "confidence": 0.95,
+      "created_at": "2026-08-20",
+      "updated_at": "2026-09-18",
+      "priced_in_ratio": 1.0,
+      "status_reason": "半年报业绩落地后60日价格分位达高位，市场定价重心已切换至1.6T周期",
+      "superseded_by": "TH_01",
+      "evidence_pointers": [
+        "EV_20260820_01_a3f1",
+        "EV_20260918_01_b7c2"
+      ],
+      "invalidation_condition": "800G单季度毛利率跌破30%"
+    },
+    {
+      "id": "TH_03",
+      "type": "BEARISH_LOGIC",
+      "title": "上游EML光芯片严重短缺制约Q4出货上限",
+      "category": "SUPPLY_CHAIN",
+      "status": "INVALIDATED",
+      "weight": 0.0,
+      "confidence": 0.7,
+      "created_at": "2026-08-20",
+      "updated_at": "2026-09-18",
+      "priced_in_ratio": 0.3,
+      "status_reason": "自研硅光（SiPh）方案导入比例提升叠加长协锁量，光芯片瓶颈已实质解除",
+      "superseded_by": "TH_04",
+      "evidence_pointers": [
+        "EV_20260820_01_a3f1",
+        "EV_20260918_01_b7c2"
+      ],
+      "invalidation_condition": "硅光模块出货占比突破35%或长协保供落地"
+    },
+    {
+      "id": "TH_04",
+      "type": "BULLISH_LOGIC",
+      "title": "自研硅光SiPh方案良率突破并锁定CW光源长协保供",
+      "category": "SUPPLY_CHAIN",
+      "status": "ACTIVE",
+      "weight": 0.7,
+      "confidence": 0.85,
+      "created_at": "2026-09-18",
+      "updated_at": "2026-10-12",
+      "priced_in_ratio": 0.2,
+      "status_reason": "硅光出货占比突破35%且上游CW光源锁量，直接支撑1.6T高毛利放量",
+      "superseded_by": null,
+      "evidence_pointers": [
+        "EV_20260918_01_b7c2"
+      ],
+      "invalidation_condition": "硅光模块良率回落或CW光源供应中断"
+    }
+  ],
+  "edges": [
+    {
+      "source": "TH_04",
+      "target": "TH_01",
+      "relation": "UPSTREAM_DRIVES",
+      "hop": 1,
+      "transmission_sign": "+1",
+      "created_at": "2026-09-18",
+      "description": "自研硅光方案良率突破与CW光源长协保供直接支撑1.6T光模块Q4放量"
+    },
+    {
+      "source": "TH_04",
+      "target": "TH_03",
+      "relation": "INVALIDATES",
+      "hop": 1,
+      "transmission_sign": "-1",
+      "created_at": "2026-09-18",
+      "description": "1.6T硅光方案规模导入直接证伪传统EML光芯片卡脖子逻辑"
+    },
+    {
+      "source": "TH_02",
+      "target": "TH_01",
+      "relation": "CONFIRM",
+      "hop": 1,
+      "transmission_sign": "+1",
+      "created_at": "2026-09-18",
+      "description": "800G产线成熟度与客户粘性顺延验证1.6T首发份额优势"
+    }
+  ],
+  "history_log": [
+    {
+      "as_of_date": "2026-08-20",
+      "op": "ADD_NODE",
+      "node_id": "TH_02",
+      "prev_status": null,
+      "new_status": "ACTIVE",
+      "prev_weight": null,
+      "new_weight": 0.75,
+      "evidence_id": "EV_20260820_01_a3f1",
+      "node_before_full": null
+    },
+    {
+      "as_of_date": "2026-08-20",
+      "op": "ADD_NODE",
+      "node_id": "TH_03",
+      "prev_status": null,
+      "new_status": "ACTIVE",
+      "prev_weight": null,
+      "new_weight": 0.6,
+      "evidence_id": "EV_20260820_01_a3f1",
+      "node_before_full": null
+    },
+    {
+      "as_of_date": "2026-09-18",
+      "op": "PRICED_IN",
+      "node_id": "TH_02",
+      "prev_status": "ACTIVE",
+      "new_status": "PRICED_IN",
+      "prev_weight": 0.75,
+      "new_weight": 0.75,
+      "evidence_id": "EV_20260918_01_b7c2",
+      "node_before_full": {
+        "status": "ACTIVE",
+        "weight": 0.75,
+        "confidence": 0.95,
+        "priced_in_ratio": 0.25,
+        "updated_at": "2026-08-20",
+        "status_reason": "2026H1半年报800G光模块出货高增，业绩处于放量兑现期",
+        "superseded_by": null,
+        "evidence_pointers": [
+          "EV_20260820_01_a3f1"
+        ],
+        "invalidation_condition": "800G单季度毛利率跌破30%"
+      }
+    },
+    {
+      "as_of_date": "2026-09-18",
+      "op": "INVALIDATE",
+      "node_id": "TH_03",
+      "prev_status": "ACTIVE",
+      "new_status": "INVALIDATED",
+      "prev_weight": 0.6,
+      "new_weight": 0.0,
+      "evidence_id": "EV_20260918_01_b7c2",
+      "node_before_full": {
+        "status": "ACTIVE",
+        "weight": 0.6,
+        "confidence": 0.7,
+        "priced_in_ratio": 0.3,
+        "updated_at": "2026-08-20",
+        "status_reason": "半年报业绩会管理层提示上游高速EML光芯片存在结构性紧缺",
+        "superseded_by": null,
+        "evidence_pointers": [
+          "EV_20260820_01_a3f1"
+        ],
+        "invalidation_condition": "硅光模块出货占比突破35%或长协保供落地"
+      }
+    },
+    {
+      "as_of_date": "2026-09-18",
+      "op": "ADD_NODE",
+      "node_id": "TH_01",
+      "prev_status": null,
+      "new_status": "ACTIVE",
+      "prev_weight": null,
+      "new_weight": 0.8,
+      "evidence_id": "EV_20260918_01_b7c2",
+      "node_before_full": null
+    },
+    {
+      "as_of_date": "2026-09-18",
+      "op": "ADD_NODE",
+      "node_id": "TH_04",
+      "prev_status": null,
+      "new_status": "ACTIVE",
+      "prev_weight": null,
+      "new_weight": 0.7,
+      "evidence_id": "EV_20260918_01_b7c2",
+      "node_before_full": null
+    },
+    {
+      "as_of_date": "2026-10-12",
+      "op": "CONFIRM",
+      "node_id": "TH_01",
+      "prev_status": "ACTIVE",
+      "new_status": "ACTIVE",
+      "prev_weight": 0.8,
+      "new_weight": 0.85,
+      "evidence_id": "EV_20261012_01_d9e4",
+      "node_before_full": {
+        "status": "ACTIVE",
+        "weight": 0.8,
+        "confidence": 0.85,
+        "priced_in_ratio": 0.25,
+        "updated_at": "2026-09-18",
+        "status_reason": "1.6T产品完成送样认证并进入Q4量产准备阶段",
+        "superseded_by": null,
+        "evidence_pointers": [
+          "EV_20260918_01_b7c2"
+        ],
+        "invalidation_condition": "北美四大CSP季度资本开支环比下滑或1.6T出货推迟至2027Q2后"
+      }
+    }
+  ],
+  "baseline_snapshot": {
+    "as_of_date": "2026-08-20",
+    "nodes": [
+      "TH_02",
+      "TH_03"
+    ],
+    "edges": []
+  }
+}

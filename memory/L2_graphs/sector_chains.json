@@ -1,0 +1,222 @@
+{
+  "entities": {
+    "IND_PHOSPHIDE_WAFER": {"name": "上游磷化铟衬底与晶圆产线 (InP Wafer)", "type": "UPSTREAM_RAW_MATERIAL"},
+    "EML_CHIP_MAKER": {"name": "中游海外EML光芯片厂 (Lumentum/Coherent)", "type": "MIDSTREAM_COMPONENT"},
+    "NORTH_AMERICA_CSP_CAPEX": {"name": "上游北美云厂商AI资本开支 (CSP CapEx)", "type": "UPSTREAM_DEMAND_SOURCE"},
+    "NVDA_BLACKWELL_RACK": {"name": "中游英伟达新一代GPU机柜 (NVDA Blackwell/Rubin)", "type": "MIDSTREAM_PLATFORM"},
+    "LITHIUM_MINE_SUPPLY": {"name": "上游海外锂矿供给 (Pilbara/SQM锂精矿)", "type": "UPSTREAM_RAW_MATERIAL"},
+    "CATHODE_CELL_COST": {"name": "中游正极材料与动力电芯成本", "type": "MIDSTREAM_COMPONENT"},
+    "TSMC_COWOS": {"name": "上游台积电CoWoS先进封装", "type": "UPSTREAM_BOTTLENECK"},
+    "AI_SERVER_ODM": {"name": "中游AI服务器整机代工与交付", "type": "MIDSTREAM_PLATFORM"},
+    "EU_TARIFF": {"name": "欧盟电动汽车关税与最低价格承诺机制", "type": "MACRO_POLICY"},
+    "BIS_CONTROL": {"name": "北美BIS半导体出口管制清单", "type": "MACRO_POLICY"},
+    "ASML_LITHO": {"name": "上游阿斯麦光刻机出口受限", "type": "UPSTREAM_EQUIP"},
+    "FAB_MULTI_PATTERNING": {"name": "中游国内晶圆厂多重曝光工艺替代", "type": "MIDSTREAM_PROCESS"},
+    "HYNIX_HBM": {"name": "上游SK海力士HBM3e高带宽存储", "type": "UPSTREAM_BOTTLENECK"},
+    "AI_CHIP_PACKAGING": {"name": "中游国产AI加速卡先进封装交付", "type": "MIDSTREAM_COMPONENT"},
+    "HIGH_END_BANQUET_DEMAND": {"name": "上游高端政商宴请与礼赠需求指数", "type": "UPSTREAM_DEMAND_SOURCE"},
+    "FEITIAN_WHOLESALE": {"name": "中游全国百荣酒商散飞批价指数 (今日酒价)", "type": "PRICE_BENCHMARK"}
+  },
+  "edges": [
+    {
+      "source": "IND_PHOSPHIDE_WAFER",
+      "target": "EML_CHIP_MAKER",
+      "relation": "COST_SQUEEZE",
+      "hop": 1,
+      "transmission_sign": "-1",
+      "gamma": 0.85,
+      "keywords": ["磷化铟", "晶圆产线", "衬底", "InP", "Lumentum", "停产检修"],
+      "description": "晶圆短缺推升海外EML光芯片成本并导致交付受阻"
+    },
+    {
+      "source": "EML_CHIP_MAKER",
+      "target": "300308.SZ",
+      "relation": "COST_SQUEEZE",
+      "hop": 1,
+      "transmission_sign": "+1",
+      "gamma": 0.80,
+      "keywords": ["EML", "光芯片", "激光器晶圆", "现货报价"],
+      "description": "EML光芯片缺货与提价挤压下游高速光模块封装毛利与出货"
+    },
+    {
+      "source": "EML_CHIP_MAKER",
+      "target": "300502.SZ",
+      "relation": "COST_SQUEEZE",
+      "hop": 1,
+      "transmission_sign": "+1",
+      "gamma": 0.80,
+      "keywords": ["EML", "光芯片", "激光器晶圆", "现货报价"],
+      "description": "EML光芯片缺货挤压高速光模块封装厂毛利与交付节奏"
+    },
+    {
+      "source": "NORTH_AMERICA_CSP_CAPEX",
+      "target": "NVDA_BLACKWELL_RACK",
+      "relation": "DEMAND_PROXY",
+      "hop": 1,
+      "transmission_sign": "+1",
+      "gamma": 0.90,
+      "keywords": ["北美云厂商", "北美四大云厂商", "CSP", "资本开支", "CapEx"],
+      "description": "北美云厂商上调AI资本开支直接拉动新一代GPU机柜扩产"
+    },
+    {
+      "source": "NVDA_BLACKWELL_RACK",
+      "target": "300308.SZ",
+      "relation": "UPSTREAM_DRIVES",
+      "hop": 1,
+      "transmission_sign": "+1",
+      "gamma": 0.85,
+      "keywords": ["NVDA", "英伟达", "Blackwell", "Rubin", "GB200", "GPU集群"],
+      "description": "英伟达新一代GPU机柜出货放量带动配套800G/1.6T光模块订单高增"
+    },
+    {
+      "source": "NVDA_BLACKWELL_RACK",
+      "target": "300502.SZ",
+      "relation": "UPSTREAM_DRIVES",
+      "hop": 1,
+      "transmission_sign": "+1",
+      "gamma": 0.82,
+      "keywords": ["NVDA", "英伟达", "Blackwell", "GPU集群", "高速光模块加单"],
+      "description": "英伟达GPU集群出货指引上调拉动高速光模块加单"
+    },
+    {
+      "source": "LITHIUM_MINE_SUPPLY",
+      "target": "CATHODE_CELL_COST",
+      "relation": "COST_SQUEEZE",
+      "hop": 1,
+      "transmission_sign": "-1",
+      "gamma": 0.80,
+      "keywords": ["锂矿", "海外锂矿", "碳酸锂", "锂精矿", "Pilbara"],
+      "description": "上游锂矿与碳酸锂价格变动传导至正极材料与电芯成本"
+    },
+    {
+      "source": "CATHODE_CELL_COST",
+      "target": "002594.SZ",
+      "relation": "COST_SQUEEZE",
+      "hop": 1,
+      "transmission_sign": "+1",
+      "gamma": 0.75,
+      "keywords": ["正极材料", "动力电芯", "刀片电池", "电芯成本", "整车毛利"],
+      "description": "正极材料与动力电芯成本变动传导至新能源整车单车毛利"
+    },
+    {
+      "source": "CATHODE_CELL_COST",
+      "target": "300750.SZ",
+      "relation": "COST_SQUEEZE",
+      "hop": 1,
+      "transmission_sign": "-1",
+      "gamma": 0.78,
+      "keywords": ["动力电池厂", "碳酸锂让利"],
+      "description": "锂精矿拍卖价下调与让利长协增厚中游动力电池龙头单位毛利"
+    },
+    {
+      "source": "LITHIUM_MINE_SUPPLY",
+      "target": "002466.SZ",
+      "relation": "UPSTREAM_DRIVES",
+      "hop": 1,
+      "transmission_sign": "-1",
+      "gamma": 0.82,
+      "keywords": ["智利SQM", "南美盐湖", "锂盐供给过剩"],
+      "description": "海外盐湖扩产导致全球锂盐供给过剩，压制锂矿企业盈利中枢"
+    },
+    {
+      "source": "TSMC_COWOS",
+      "target": "AI_SERVER_ODM",
+      "relation": "UPSTREAM_DRIVES",
+      "hop": 1,
+      "transmission_sign": "+1",
+      "gamma": 0.85,
+      "keywords": ["台积电CoWoS", "CoWoS", "先进封装"],
+      "description": "台积电CoWoS月产能扩充缓解AI芯片供给瓶颈"
+    },
+    {
+      "source": "AI_SERVER_ODM",
+      "target": "000977.SZ",
+      "relation": "UPSTREAM_DRIVES",
+      "hop": 1,
+      "transmission_sign": "+1",
+      "gamma": 0.82,
+      "keywords": ["AI服务器芯片", "服务器交付"],
+      "description": "AI服务器芯片交付提速带动下游算力服务器整机放量"
+    },
+    {
+      "source": "EU_TARIFF",
+      "target": "002594.SZ",
+      "relation": "DEMAND_PROXY",
+      "hop": 1,
+      "transmission_sign": "+1",
+      "gamma": 0.84,
+      "keywords": ["欧盟关税", "最低价格承诺", "惩罚性出海关税"],
+      "description": "中欧最低价格承诺机制替代惩罚性关税直接利好新能源车出海"
+    },
+    {
+      "source": "BIS_CONTROL",
+      "target": "688981.SH",
+      "relation": "COST_SQUEEZE",
+      "hop": 1,
+      "transmission_sign": "-1",
+      "gamma": 0.82,
+      "keywords": ["BIS出口管制", "BIS", "光刻耗材断供"],
+      "description": "北美BIS出口管制限制关键光刻耗材，短期压制先进制程稼动率"
+    },
+    {
+      "source": "ASML_LITHO",
+      "target": "FAB_MULTI_PATTERNING",
+      "relation": "UPSTREAM_DRIVES",
+      "hop": 1,
+      "transmission_sign": "+1",
+      "gamma": 0.86,
+      "keywords": ["ASML", "阿斯麦", "光刻机受限"],
+      "description": "海外高端光刻机受限倒逼国内晶圆厂扩充多重曝光工艺"
+    },
+    {
+      "source": "FAB_MULTI_PATTERNING",
+      "target": "688012.SH",
+      "relation": "UPSTREAM_DRIVES",
+      "hop": 1,
+      "transmission_sign": "+1",
+      "gamma": 0.84,
+      "keywords": ["多重曝光", "刻蚀替代"],
+      "description": "多重曝光工艺全面提速拉动国产高端刻蚀设备采购份额倍增"
+    },
+    {
+      "source": "HYNIX_HBM",
+      "target": "AI_CHIP_PACKAGING",
+      "relation": "COST_SQUEEZE",
+      "hop": 1,
+      "transmission_sign": "-1",
+      "gamma": 0.80,
+      "keywords": ["Hynix_HBM", "HBM3e", "高带宽存储"],
+      "description": "海外HBM3e良率波动导致高带宽存储交期拉长"
+    },
+    {
+      "source": "AI_CHIP_PACKAGING",
+      "target": "688256.SH",
+      "relation": "COST_SQUEEZE",
+      "hop": 1,
+      "transmission_sign": "+1",
+      "gamma": 0.78,
+      "keywords": ["加速卡封装", "交期拉长"],
+      "description": "存储配套受阻制约国产AI加速卡封装出货节奏"
+    },
+    {
+      "source": "HIGH_END_BANQUET_DEMAND",
+      "target": "FEITIAN_WHOLESALE",
+      "relation": "DEMAND_PROXY",
+      "hop": 1,
+      "transmission_sign": "+1",
+      "gamma": 0.88,
+      "keywords": ["商务宴请", "政商宴请", "宴请场景", "百荣"],
+      "description": "高端政商宴请需求强弱直接决定全国批发渠道散瓶批价走势"
+    },
+    {
+      "source": "FEITIAN_WHOLESALE",
+      "target": "600519.SH",
+      "relation": "DEMAND_PROXY",
+      "hop": 1,
+      "transmission_sign": "+1",
+      "gamma": 0.90,
+      "keywords": ["飞天茅台", "今日酒价", "散飞批价", "散瓶批价"],
+      "description": "飞天茅台散瓶批价波动直接传导至高端白酒龙头出厂与渠道信心"
+    }
+  ]
+}

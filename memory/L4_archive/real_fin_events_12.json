@@ -1,0 +1,451 @@
+[
+  {
+    "case_id": "REAL_01",
+    "scenario": "TEMPORAL_REVERSAL",
+    "stock_code": "300308.SZ",
+    "stock_name": "中际旭创",
+    "as_of_date": "2024-08-05",
+    "prior_theses": [
+      {"id": "TH_01", "type": "BULLISH_LOGIC", "title": "北美云大厂GB200与800G光模块订单持续上修", "weight": 0.88, "confidence": 0.90, "status": "ACTIVE"},
+      {"id": "TH_02", "type": "BULLISH_LOGIC", "title": "泰国工厂800G产线良率超预期爬坡", "weight": 0.72, "confidence": 0.85, "status": "ACTIVE"},
+      {"id": "TH_03", "type": "BEARISH_LOGIC", "title": "北美算力链估值拥挤与汇率波动风险", "weight": 0.30, "confidence": 0.65, "status": "ACTIVE"}
+    ],
+    "prior_chunks": [
+      "[2024-06-18] 机构调研纪要：中际旭创800G光模块Q2出货量环比高增，北美CSP客户持续加单。",
+      "[2024-07-12] 业绩预告解读：半年度净利润同比大幅增长，高速光模块占比持续提升。",
+      "[2024-07-25] 卖方深度：泰国工厂二期扩产顺利，1.6T样品进入客户送样验证阶段。"
+    ],
+    "market_regime": {
+      "return_20d_pct": -8.4,
+      "close_rank_pct_60d": 0.35,
+      "range_pos_60d": 0.32,
+      "priced_in_ratio": 0.28,
+      "turnover_anomaly": "HIGH"
+    },
+    "latest_event": {
+      "event_id": "EV_20240805_01_r001",
+      "published_at": "2024-08-05 09:00:00",
+      "source": "海外供应链与算力快讯",
+      "title": "英伟达Blackwell B200芯片因CoWoS-L封装设计缺陷推迟大批量出货三个月",
+      "content": "The Information与供应链多方确认，英伟达Blackwell架构B200芯片因台积电CoWoS-L良率及掩膜重改问题，大批量机柜交付将推迟至少一个季度至2025年Q1，短期北美云厂配套1.6T及部分800G拉货节奏受阻。",
+      "evidence_type": "EMPIRICAL_NEWS_FILING"
+    },
+    "real_5d_return_pct": -9.42,
+    "bench_5d_return_pct": -1.58,
+    "car_5d_pct": -7.84,
+    "ground_truth_t5_direction": "BEARISH",
+    "ground_truth_invalidated_id": "TH_01",
+    "ground_truth_expected_op": "INVALIDATE"
+  },
+  {
+    "case_id": "REAL_02",
+    "scenario": "PRICED_IN_TRAP",
+    "stock_code": "300308.SZ",
+    "stock_name": "中际旭创",
+    "as_of_date": "2024-10-22",
+    "prior_theses": [
+      {"id": "TH_01", "type": "BULLISH_LOGIC", "title": "2024三季报業績高增与800G放量预期", "weight": 0.90, "confidence": 0.92, "status": "ACTIVE"},
+      {"id": "TH_02", "type": "BULLISH_LOGIC", "title": "1.6T光模块四季度小批量出货预期", "weight": 0.76, "confidence": 0.85, "status": "ACTIVE"},
+      {"id": "TH_03", "type": "BEARISH_LOGIC", "title": "四季度海外硅光方案导入带来价格折让担忧", "weight": 0.35, "confidence": 0.70, "status": "ACTIVE"}
+    ],
+    "prior_chunks": [
+      "[2024-09-26] 行情复盘：算力光模块板块领涨创业板，中际旭创近20日累计涨幅近30%。",
+      "[2024-10-10] 三季报前瞻：多家券商上调全年盈利预测，预计Q3单季净利创历史新高。",
+      "[2024-10-18] 融资融券周报：光模块龙头融资余额逼近历史高位，资金博弈三季报落地。"
+    ],
+    "market_regime": {
+      "return_20d_pct": 29.8,
+      "close_rank_pct_60d": 0.95,
+      "range_pos_60d": 0.93,
+      "priced_in_ratio": 0.91,
+      "turnover_anomaly": "HIGH"
+    },
+    "latest_event": {
+      "event_id": "EV_20241022_01_r002",
+      "published_at": "2024-10-22 08:30:00",
+      "source": "巨潮资讯网定期报告",
+      "title": "中际旭创披露2024年三季报：前三季度净利润37.53亿元，同比增长189.59%",
+      "content": "公司发布2024年第三季度报告，前三季度实现营业收入173.13亿元（同比+146.26%），归母净利润37.53亿元（同比+189.59%）；其中Q3单季归母净利润13.94亿元，受汇兑损失影响环比增幅略低于买方最乐观预期。",
+      "evidence_type": "EMPIRICAL_NEWS_FILING"
+    },
+    "real_5d_return_pct": -7.85,
+    "bench_5d_return_pct": -0.92,
+    "car_5d_pct": -6.93,
+    "ground_truth_t5_direction": "BEARISH",
+    "ground_truth_invalidated_id": "TH_01",
+    "ground_truth_expected_op": "PRICED_IN"
+  },
+  {
+    "case_id": "REAL_03",
+    "scenario": "TEMPORAL_REVERSAL",
+    "stock_code": "300308.SZ",
+    "stock_name": "中际旭创",
+    "as_of_date": "2025-01-27",
+    "prior_theses": [
+      {"id": "TH_01", "type": "BULLISH_LOGIC", "title": "北美大模型预训练Scaling Law驱动算力集群无上限扩张", "weight": 0.92, "confidence": 0.90, "status": "ACTIVE"},
+      {"id": "TH_02", "type": "BULLISH_LOGIC", "title": "2024全年业绩预告翻倍增长", "weight": 0.80, "confidence": 0.88, "status": "ACTIVE"},
+      {"id": "TH_03", "type": "BEARISH_LOGIC", "title": "海外云厂AI资本开支ROI审美疲劳与架构效率重构风险", "weight": 0.35, "confidence": 0.72, "status": "ACTIVE"}
+    ],
+    "prior_chunks": [
+      "[2025-01-15] 行业跟踪：北美CSP厂商2025年资本开支指引维持高位，1.6T光模块排产稳健。",
+      "[2025-01-21] 业绩预告：中际旭创预计2024年归母净利润46亿-58亿元，同比翻倍。",
+      "[2025-01-23] 卖方电话会：星际之门（Stargate）5000亿美元基建计划提振海外算力链情绪。"
+    ],
+    "market_regime": {
+      "return_20d_pct": -3.2,
+      "close_rank_pct_60d": 0.42,
+      "range_pos_60d": 0.38,
+      "priced_in_ratio": 0.32,
+      "turnover_anomaly": "HIGH"
+    },
+    "latest_event": {
+      "event_id": "EV_20250127_01_r003",
+      "published_at": "2025-01-27 09:00:00",
+      "source": "全球AI产业突发快讯",
+      "title": "DeepSeek-R1开源模型以极低训练成本比肩OpenAI o1，引发海外高端算力堆叠逻辑巨震",
+      "content": "深度求索发布开源推理大模型DeepSeek-R1并登顶美区App Store，其通过MLA与MoE算法优化大幅降低预训练与推理算力消耗，引发全球市场对北美云厂商超大规模GPU及高速光模块资本开支必要性的逻辑重估。",
+      "evidence_type": "EMPIRICAL_NEWS_FILING"
+    },
+    "real_5d_return_pct": -16.40,
+    "bench_5d_return_pct": -0.65,
+    "car_5d_pct": -15.75,
+    "ground_truth_t5_direction": "BEARISH",
+    "ground_truth_invalidated_id": "TH_01",
+    "ground_truth_expected_op": "INVALIDATE"
+  },
+  {
+    "case_id": "REAL_04",
+    "scenario": "PRICED_IN_TRAP",
+    "stock_code": "300502.SZ",
+    "stock_name": "新易盛",
+    "as_of_date": "2024-10-24",
+    "prior_theses": [
+      {"id": "TH_01", "type": "BULLISH_LOGIC", "title": "800G大客户导入加速与三季报业绩暴增预期", "weight": 0.90, "confidence": 0.92, "status": "ACTIVE"},
+      {"id": "TH_02", "type": "BULLISH_LOGIC", "title": "泰国工厂二期产能释放带动毛利率提升", "weight": 0.78, "confidence": 0.85, "status": "ACTIVE"},
+      {"id": "TH_03", "type": "BEARISH_LOGIC", "title": "短期涨幅巨大引发获利盘兑现", "weight": 0.32, "confidence": 0.68, "status": "ACTIVE"}
+    ],
+    "prior_chunks": [
+      "[2024-09-30] 市场异动：新易盛月内累计涨幅超35%，创历史新高。",
+      "[2024-10-14] 券商点评：预计新易盛Q3单季净利润同比增速超200%，领跑光模块板块。",
+      "[2024-10-21] 机构持仓：公募基金三季度大幅加仓新易盛，跻身前十大重仓股。"
+    ],
+    "market_regime": {
+      "return_20d_pct": 33.5,
+      "close_rank_pct_60d": 0.97,
+      "range_pos_60d": 0.95,
+      "priced_in_ratio": 0.92,
+      "turnover_anomaly": "HIGH"
+    },
+    "latest_event": {
+      "event_id": "EV_20241024_01_r004",
+      "published_at": "2024-10-24 08:30:00",
+      "source": "深交所定期报告",
+      "title": "新易盛披露2024年三季报：前三季度净利润16.46亿元，同比暴增283.20%",
+      "content": "新易盛公告2024年三季报，前三季度营收51.30亿元（同比+145.82%），归母净利润16.46亿元（同比+283.20%）。尽管同比增速极高，但股价此前20个交易日已上涨超33%，利好落地后高位获利资金集中兑现。",
+      "evidence_type": "EMPIRICAL_NEWS_FILING"
+    },
+    "real_5d_return_pct": -6.80,
+    "bench_5d_return_pct": -0.75,
+    "car_5d_pct": -6.05,
+    "ground_truth_t5_direction": "BEARISH",
+    "ground_truth_invalidated_id": "TH_01",
+    "ground_truth_expected_op": "PRICED_IN"
+  },
+  {
+    "case_id": "REAL_05",
+    "scenario": "SECTOR_CONTAGION",
+    "stock_code": "300502.SZ",
+    "stock_name": "新易盛",
+    "as_of_date": "2024-12-03",
+    "prior_theses": [
+      {"id": "TH_01", "type": "BULLISH_LOGIC", "title": "800G高速光模块出货量逐季攀升", "weight": 0.42, "confidence": 0.80, "status": "ACTIVE"},
+      {"id": "TH_02", "type": "BEARISH_LOGIC", "title": "上游高速EML光芯片紧缺与排产瓶颈担忧", "weight": 0.85, "confidence": 0.88, "status": "ACTIVE"}
+    ],
+    "prior_chunks": [
+      "[2024-11-12] 产业链调研：海外EML光芯片交期拉长，市场担忧二线及新晋800G厂商拿货受限。",
+      "[2024-11-20] 行业周报：磷化铟衬底与EML外延片产能紧张，锁单能力成为Q4胜负手。",
+      "[2024-11-28] 互动易回复：公司与全球主流光芯片供应商保持长期战略合作。"
+    ],
+    "market_regime": {
+      "return_20d_pct": 2.4,
+      "close_rank_pct_60d": 0.52,
+      "range_pos_60d": 0.48,
+      "priced_in_ratio": 0.28,
+      "turnover_anomaly": "NORMAL"
+    },
+    "latest_event": {
+      "event_id": "EV_20241203_01_r005",
+      "published_at": "2024-12-03 09:00:00",
+      "source": "海外光电产业链快讯",
+      "title": "磷化铟外延片良率提升，Lumentum宣布200G EML光芯片产能扩充35%并向核心光模块客户超额交付",
+      "content": "海外光芯片龙头Lumentum在投资者会议上确认，随着上游磷化铟晶圆（InP Wafer）大尺寸产线良率突破，其高速EML光芯片Q4出货量环比增长超35%，彻底缓解下游800G/1.6T光模块组装厂的物料瓶颈。",
+      "evidence_type": "EMPIRICAL_NEWS_FILING"
+    },
+    "real_5d_return_pct": 8.95,
+    "bench_5d_return_pct": 1.42,
+    "car_5d_pct": 7.53,
+    "ground_truth_t5_direction": "BULLISH",
+    "ground_truth_invalidated_id": "TH_02",
+    "ground_truth_expected_op": "CONFIRM"
+  },
+  {
+    "case_id": "REAL_06",
+    "scenario": "TEMPORAL_REVERSAL",
+    "stock_code": "300502.SZ",
+    "stock_name": "新易盛",
+    "as_of_date": "2025-01-21",
+    "prior_theses": [
+      {"id": "TH_01", "type": "BEARISH_LOGIC", "title": "年末汇率波动与四季度海外客户拉货放缓担忧", "weight": 0.84, "confidence": 0.85, "status": "ACTIVE"},
+      {"id": "TH_02", "type": "BULLISH_LOGIC", "title": "800G与400G海外云厂份额跃升带来盈利非线性释放", "weight": 0.68, "confidence": 0.82, "status": "ACTIVE"}
+    ],
+    "prior_chunks": [
+      "[2025-01-06] 市场综述：年初算力板块回调，市场担心Q4光模块提货节奏放缓。",
+      "[2025-01-13] 卖方跟踪：海外部分交换机配套延迟传闻扰动市场情绪。",
+      "[2025-01-17] 资金流向：业绩预告窗口期前夕，机构资金持币观望。"
+    ],
+    "market_regime": {
+      "return_20d_pct": -6.5,
+      "close_rank_pct_60d": 0.38,
+      "range_pos_60d": 0.35,
+      "priced_in_ratio": 0.25,
+      "turnover_anomaly": "NORMAL"
+    },
+    "latest_event": {
+      "event_id": "EV_20250121_01_r006",
+      "published_at": "2025-01-21 08:30:00",
+      "source": "深交所业绩预告",
+      "title": "新易盛发布2024年度业绩预告：预计全年净利润28亿-30.5亿元，同比暴增306.76%-343.08%",
+      "content": "公司发布2024年全年业绩预告，预计归母净利润28.0亿至30.5亿元，同比增长306.76%-343.08%；测算Q4单季净利润达11.54亿-14.04亿元，环比再创历史新高，彻底证伪此前四季度拉货放缓传闻。",
+      "evidence_type": "EMPIRICAL_NEWS_FILING"
+    },
+    "real_5d_return_pct": 11.20,
+    "bench_5d_return_pct": 0.85,
+    "car_5d_pct": 10.35,
+    "ground_truth_t5_direction": "BULLISH",
+    "ground_truth_invalidated_id": "TH_01",
+    "ground_truth_expected_op": "INVALIDATE"
+  },
+  {
+    "case_id": "REAL_07",
+    "scenario": "SECTOR_CONTAGION",
+    "stock_code": "600519.SH",
+    "stock_name": "贵州茅台",
+    "as_of_date": "2024-06-14",
+    "prior_theses": [
+      {"id": "TH_01", "type": "BULLISH_LOGIC", "title": "端午旺季高端白酒批价企稳与渠道动销韧性", "weight": 0.85, "confidence": 0.88, "status": "ACTIVE"},
+      {"id": "TH_02", "type": "BEARISH_LOGIC", "title": "商务宴请需求疲软与黄牛电商渠道抛货挤压风险", "weight": 0.45, "confidence": 0.75, "status": "ACTIVE"}
+    ],
+    "prior_chunks": [
+      "[2024-05-20] 渠道周报：茅台集团强调控量稳价，市场预期端午旺季散瓶批价守住2500元关口。",
+      "[2024-05-30] 券商研报：i茅台直营占比提升有助平抑周期波动，维持买入评级。",
+      "[2024-06-05] 行业点评：端午节前礼赠需求平稳，渠道库存处于可控区间。"
+    ],
+    "market_regime": {
+      "return_20d_pct": -5.8,
+      "close_rank_pct_60d": 0.25,
+      "range_pos_60d": 0.22,
+      "priced_in_ratio": 0.30,
+      "turnover_anomaly": "HIGH"
+    },
+    "latest_event": {
+      "event_id": "EV_20240614_01_r007",
+      "published_at": "2024-06-14 09:00:00",
+      "source": "今日酒价与百荣酒商报价监测",
+      "title": "高端政商宴请场景收缩传导至百荣批发渠道，散装飞天茅台批价单周急跌跌破2250元/瓶",
+      "content": "受高端商务宴请需求收缩及618电商百亿补贴低价放货双重挤压，全国核心酒水批发市场（百荣等）散瓶飞天茅台今日批价快速跌破2250元/瓶，部分撸货黄牛因价格倒挂集体停止收货并抛售库存，经销商渠道信心受挫。",
+      "evidence_type": "EMPIRICAL_NEWS_FILING"
+    },
+    "real_5d_return_pct": -4.65,
+    "bench_5d_return_pct": -1.15,
+    "car_5d_pct": -3.50,
+    "ground_truth_t5_direction": "BEARISH",
+    "ground_truth_invalidated_id": "TH_01",
+    "ground_truth_expected_op": "INVALIDATE"
+  },
+  {
+    "case_id": "REAL_08",
+    "scenario": "TEMPORAL_REVERSAL",
+    "stock_code": "600519.SH",
+    "stock_name": "贵州茅台",
+    "as_of_date": "2024-08-09",
+    "prior_theses": [
+      {"id": "TH_01", "type": "BEARISH_LOGIC", "title": "白酒行业降速背景下现金流分配保守与估值中枢下移担忧", "weight": 0.85, "confidence": 0.86, "status": "ACTIVE"},
+      {"id": "TH_02", "type": "BULLISH_LOGIC", "title": "高股息红利属性与中报业绩稳健兑现", "weight": 0.65, "confidence": 0.80, "status": "ACTIVE"}
+    ],
+    "prior_chunks": [
+      "[2024-07-15] 基金二季报：消费医药仓位持续回落，市场担忧白酒龙头缺乏超预期股东回报机制。",
+      "[2024-07-28] 行业评论：宏观消费弱复苏背景下，高端白酒估值锚亟待高分红托底。",
+      "[2024-08-02] 市场前瞻：投资者密切关注茅台中报是否回应长期分红比例诉求。"
+    ],
+    "market_regime": {
+      "return_20d_pct": -3.1,
+      "close_rank_pct_60d": 0.28,
+      "range_pos_60d": 0.25,
+      "priced_in_ratio": 0.22,
+      "turnover_anomaly": "NORMAL"
+    },
+    "latest_event": {
+      "event_id": "EV_20240809_01_r008",
+      "published_at": "2024-08-09 08:30:00",
+      "source": "上交所公告",
+      "title": "贵州茅台披露2024半年报净利增长15.88%，并首次承诺2024-2026年常规分红率不低于75%",
+      "content": "公司发布2024年半年度报告，上半年营收819.31亿元（同比+17.76%），归母净利润416.96亿元（同比+15.88%），超出15%年度指引；同时发布《2024-2026年度现金分红回报规划》，将常规分红率提升至不低于75%且每年两次分红，直接逆转此前股东回报保守的悲观预期。",
+      "evidence_type": "EMPIRICAL_NEWS_FILING"
+    },
+    "real_5d_return_pct": 2.85,
+    "bench_5d_return_pct": 0.42,
+    "car_5d_pct": 2.43,
+    "ground_truth_t5_direction": "BULLISH",
+    "ground_truth_invalidated_id": "TH_01",
+    "ground_truth_expected_op": "INVALIDATE"
+  },
+  {
+    "case_id": "REAL_09",
+    "scenario": "PRICED_IN_TRAP",
+    "stock_code": "600519.SH",
+    "stock_name": "贵州茅台",
+    "as_of_date": "2024-10-08",
+    "prior_theses": [
+      {"id": "TH_01", "type": "BULLISH_LOGIC", "title": "宏观政策转向与国庆黄金周高端白酒动销反转预期", "weight": 0.90, "confidence": 0.92, "status": "ACTIVE"},
+      {"id": "TH_02", "type": "BULLISH_LOGIC", "title": "外资回流消费核心资产驱动估值快速修复", "weight": 0.80, "confidence": 0.86, "status": "ACTIVE"},
+      {"id": "TH_03", "type": "BEARISH_LOGIC", "title": "短期脉冲式暴涨透支基本面改善斜率", "weight": 0.35, "confidence": 0.70, "status": "ACTIVE"}
+    ],
+    "prior_chunks": [
+      "[2024-09-24] 政策快讯：一揽子金融支持经济政策出台，消费白马股全线涨停。",
+      "[2024-09-30] 行情统计：贵州茅台节前短短6个交易日累计飙升近38%，股价重返1748元上方。",
+      "[2024-10-06] 假期草根调研：国庆期间婚宴与大众聚饮有所回暖，情绪极度亢奋。"
+    ],
+    "market_regime": {
+      "return_20d_pct": 34.2,
+      "close_rank_pct_60d": 0.98,
+      "range_pos_60d": 0.96,
+      "priced_in_ratio": 0.93,
+      "turnover_anomaly": "HIGH"
+    },
+    "latest_event": {
+      "event_id": "EV_20241008_01_r009",
+      "published_at": "2024-10-08 09:00:00",
+      "source": "国庆消费数据与渠道监测",
+      "title": "国庆黄金周餐饮零售销售额同比稳步增长，茅台终端动销符合预期",
+      "content": "商务部与渠道跟踪数据显示，国庆黄金周期间重点零售和餐饮企业销售额同比增长，茅台终端开瓶率环比改善、批价维持在2200元上方运行。虽然基本面数据稳健向好，但节前近35%的脉冲式暴涨已充分透支预期。",
+      "evidence_type": "EMPIRICAL_NEWS_FILING"
+    },
+    "real_5d_return_pct": -11.80,
+    "bench_5d_return_pct": -6.30,
+    "car_5d_pct": -5.50,
+    "ground_truth_t5_direction": "BEARISH",
+    "ground_truth_invalidated_id": "TH_01",
+    "ground_truth_expected_op": "PRICED_IN"
+  },
+  {
+    "case_id": "REAL_10",
+    "scenario": "TEMPORAL_REVERSAL",
+    "stock_code": "002594.SZ",
+    "stock_name": "比亚迪",
+    "as_of_date": "2024-05-29",
+    "prior_theses": [
+      {"id": "TH_01", "type": "BEARISH_LOGIC", "title": "10万-15万元混动市场价格战白热化挤压单车毛利", "weight": 0.86, "confidence": 0.88, "status": "ACTIVE"},
+      {"id": "TH_02", "type": "BULLISH_LOGIC", "title": "全新DM 5.0平台规模化降本与合资燃油车替代逻辑", "weight": 0.72, "confidence": 0.85, "status": "ACTIVE"}
+    ],
+    "prior_chunks": [
+      "[2024-05-08] 行业观察：多款竞品插混车型跟进降价，市场担忧比亚迪二季度单车净利承压。",
+      "[2024-05-16] 研报摘要：市场聚焦月底第五代DM技术发布会能否建立代际技术壁垒。",
+      "[2024-05-24] 终端走访：老款秦PLUS荣耀版清库接近尾声，经销商等待新车上市。"
+    ],
+    "market_regime": {
+      "return_20d_pct": -1.5,
+      "close_rank_pct_60d": 0.48,
+      "range_pos_60d": 0.45,
+      "priced_in_ratio": 0.26,
+      "turnover_anomaly": "HIGH"
+    },
+    "latest_event": {
+      "event_id": "EV_20240529_01_r010",
+      "published_at": "2024-05-29 09:00:00",
+      "source": "公司新车与技术发布会公告",
+      "title": "比亚迪正式发布第五代DM技术（亏电油耗2.9L/百公里），秦L与海豹06震撼定价9.98万元起",
+      "content": "比亚迪在西安正式发布第五代DM插电混动技术，发动机热效率达46.06%、百公里亏电油耗降至2.9L、综合续航2100公里；首搭车型秦L DM-i与海豹06 DM-i售价9.98万-13.98万元，门店首周末新增订单破6万辆，以技术代差彻底打破同质化价格战担忧。",
+      "evidence_type": "EMPIRICAL_NEWS_FILING"
+    },
+    "real_5d_return_pct": 8.40,
+    "bench_5d_return_pct": -0.55,
+    "car_5d_pct": 8.95,
+    "ground_truth_t5_direction": "BULLISH",
+    "ground_truth_invalidated_id": "TH_01",
+    "ground_truth_expected_op": "INVALIDATE"
+  },
+  {
+    "case_id": "REAL_11",
+    "scenario": "SECTOR_CONTAGION",
+    "stock_code": "002594.SZ",
+    "stock_name": "比亚迪",
+    "as_of_date": "2024-09-02",
+    "prior_theses": [
+      {"id": "TH_01", "type": "BULLISH_LOGIC", "title": "DM 5.0车型排产满载与8月销量突破37万辆创历史新高", "weight": 0.78, "confidence": 0.88, "status": "ACTIVE"},
+      {"id": "TH_02", "type": "BEARISH_LOGIC", "title": "上游电池原材料价格波动侵蚀整车利润率担忧", "weight": 0.75, "confidence": 0.82, "status": "ACTIVE"}
+    ],
+    "prior_chunks": [
+      "[2024-08-12] 锂电产业链周报：江西云母提锂与澳洲锂辉石供给充裕，锂盐价格延续探底。",
+      "[2024-08-22] 行业数据：磷酸铁锂正极材料加工费维持低位，电芯BOM成本持续优化。",
+      "[2024-08-28] 机构点评：金九银十旺季来临，比亚迪DM 5.0产能爬坡加快。"
+    ],
+    "market_regime": {
+      "return_20d_pct": 1.8,
+      "close_rank_pct_60d": 0.55,
+      "range_pos_60d": 0.52,
+      "priced_in_ratio": 0.25,
+      "turnover_anomaly": "NORMAL"
+    },
+    "latest_event": {
+      "event_id": "EV_20240902_01_r011",
+      "published_at": "2024-09-02 09:00:00",
+      "source": "上海有色网(SMM)与产销快报",
+      "title": "上游锂矿供给放量致电池级碳酸锂跌破7.3万元/吨，带动磷酸铁锂电芯成本再降且比亚迪8月销量破37万辆",
+      "content": "上海有色网数据显示，受上游锂矿与盐湖供给放量影响，电池级碳酸锂现货均价跌破7.3万元/吨，直接带动磷酸铁锂正极与刀片电池BOM成本进一步下降（负向成本传导转化为整车毛利增厚）；叠加公司8月新能源汽车销量达37.31万辆创历史新高。",
+      "evidence_type": "EMPIRICAL_NEWS_FILING"
+    },
+    "real_5d_return_pct": 5.65,
+    "bench_5d_return_pct": -2.10,
+    "car_5d_pct": 7.75,
+    "ground_truth_t5_direction": "BULLISH",
+    "ground_truth_invalidated_id": "TH_02",
+    "ground_truth_expected_op": "CONFIRM"
+  },
+  {
+    "case_id": "REAL_12",
+    "scenario": "TEMPORAL_REVERSAL",
+    "stock_code": "002594.SZ",
+    "stock_name": "比亚迪",
+    "as_of_date": "2025-02-10",
+    "prior_theses": [
+      {"id": "TH_01", "type": "BEARISH_LOGIC", "title": "比亚迪高阶智驾算法掉队导致中高端车型估值折价", "weight": 0.88, "confidence": 0.90, "status": "ACTIVE"},
+      {"id": "TH_02", "type": "BULLISH_LOGIC", "title": "整车电子电气架构自研与规模化供应链整合优势", "weight": 0.75, "confidence": 0.86, "status": "ACTIVE"}
+    ],
+    "prior_chunks": [
+      "[2025-01-10] 行业对比：市场普遍认为比亚迪长于三电与成本控制，但在高阶智驾普及上落后于新势力。",
+      "[2025-01-22] 卖方前瞻：比亚迪智驾团队扩充至5000人以上，计划于2月召开智能化战略发布会。",
+      "[2025-02-05] 渠道消息：首批搭载三目摄像头与激光雷达的智驾版展车陆续到店。"
+    ],
+    "market_regime": {
+      "return_20d_pct": 4.2,
+      "close_rank_pct_60d": 0.58,
+      "range_pos_60d": 0.55,
+      "priced_in_ratio": 0.30,
+      "turnover_anomaly": "HIGH"
+    },
+    "latest_event": {
+      "event_id": "EV_20250210_01_r012",
+      "published_at": "2025-02-10 09:00:00",
+      "source": "比亚迪智能化战略发布会公告",
+      "title": "比亚迪正式发布“天神之眼”高阶智驾系统，宣布10万元以上全系标配且7万级海鸥同步搭载",
+      "content": "比亚迪召开智能化战略发布会，正式发布天神之眼A/B/C三套高阶智驾方案，首批21款车型同步上市，实现10万元以上车型全系标配高阶智驾、7万级海鸥亦搭载高速NOA，并且加配不加价，彻底扭转市场对其“智驾短板”的定价折价逻辑。",
+      "evidence_type": "EMPIRICAL_NEWS_FILING"
+    },
+    "real_5d_return_pct": 11.45,
+    "bench_5d_return_pct": 1.85,
+    "car_5d_pct": 9.60,
+    "ground_truth_t5_direction": "BULLISH",
+    "ground_truth_invalidated_id": "TH_01",
+    "ground_truth_expected_op": "INVALIDATE"
+  }
+]

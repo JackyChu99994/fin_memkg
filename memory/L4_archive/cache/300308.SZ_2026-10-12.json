@@ -1,0 +1,385 @@
+{
+  "stock_code": "300308.SZ",
+  "as_of_date": "2026-10-12",
+  "data_source": "SYNTHETIC_FALLBACK",
+  "fallback_reason": "akshare error or insufficient bars: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.300308&beg=19700101&end=20261012 (Caused by NameResolutionError(\"HTTPSConnection(host='push2his.eastmoney.com', port=443): Failed to resolve 'push2his.eastmoney.com' ([Errno 8] nodename nor servname provided, or not known)\"))",
+  "klines_60d": [
+    {
+      "date": "2026-07-13",
+      "close": 120.25,
+      "pct_chg": -0.62,
+      "turnover": 3.64
+    },
+    {
+      "date": "2026-07-14",
+      "close": 120.36,
+      "pct_chg": 0.09,
+      "turnover": 3.46
+    },
+    {
+      "date": "2026-07-15",
+      "close": 121.33,
+      "pct_chg": 0.81,
+      "turnover": 3.09
+    },
+    {
+      "date": "2026-07-16",
+      "close": 122.98,
+      "pct_chg": 1.36,
+      "turnover": 2.86
+    },
+    {
+      "date": "2026-07-17",
+      "close": 124.95,
+      "pct_chg": 1.6,
+      "turnover": 3.0
+    },
+    {
+      "date": "2026-07-20",
+      "close": 126.79,
+      "pct_chg": 1.47,
+      "turnover": 3.36
+    },
+    {
+      "date": "2026-07-21",
+      "close": 128.06,
+      "pct_chg": 1.0,
+      "turnover": 3.62
+    },
+    {
+      "date": "2026-07-22",
+      "close": 128.47,
+      "pct_chg": 0.32,
+      "turnover": 3.54
+    },
+    {
+      "date": "2026-07-23",
+      "close": 127.93,
+      "pct_chg": -0.42,
+      "turnover": 3.19
+    },
+    {
+      "date": "2026-07-24",
+      "close": 126.61,
+      "pct_chg": -1.03,
+      "turnover": 2.89
+    },
+    {
+      "date": "2026-07-27",
+      "close": 124.89,
+      "pct_chg": -1.36,
+      "turnover": 2.92
+    },
+    {
+      "date": "2026-07-28",
+      "close": 123.22,
+      "pct_chg": -1.34,
+      "turnover": 3.25
+    },
+    {
+      "date": "2026-07-29",
+      "close": 122.04,
+      "pct_chg": -0.96,
+      "turnover": 3.58
+    },
+    {
+      "date": "2026-07-30",
+      "close": 121.64,
+      "pct_chg": -0.33,
+      "turnover": 3.6
+    },
+    {
+      "date": "2026-07-31",
+      "close": 122.15,
+      "pct_chg": 0.42,
+      "turnover": 3.3
+    },
+    {
+      "date": "2026-08-03",
+      "close": 123.47,
+      "pct_chg": 1.08,
+      "turnover": 2.95
+    },
+    {
+      "date": "2026-08-04",
+      "close": 125.32,
+      "pct_chg": 1.5,
+      "turnover": 2.88
+    },
+    {
+      "date": "2026-08-05",
+      "close": 127.3,
+      "pct_chg": 1.58,
+      "turnover": 3.14
+    },
+    {
+      "date": "2026-08-06",
+      "close": 128.95,
+      "pct_chg": 1.3,
+      "turnover": 3.51
+    },
+    {
+      "date": "2026-08-07",
+      "close": 129.88,
+      "pct_chg": 0.72,
+      "turnover": 3.64
+    },
+    {
+      "date": "2026-08-10",
+      "close": 129.87,
+      "pct_chg": -0.01,
+      "turnover": 3.41
+    },
+    {
+      "date": "2026-08-11",
+      "close": 128.95,
+      "pct_chg": -0.71,
+      "turnover": 3.04
+    },
+    {
+      "date": "2026-08-12",
+      "close": 127.38,
+      "pct_chg": -1.22,
+      "turnover": 2.86
+    },
+    {
+      "date": "2026-08-13",
+      "close": 125.6,
+      "pct_chg": -1.4,
+      "turnover": 3.04
+    },
+    {
+      "date": "2026-08-14",
+      "close": 124.07,
+      "pct_chg": -1.22,
+      "turnover": 3.42
+    },
+    {
+      "date": "2026-08-17",
+      "close": 123.19,
+      "pct_chg": -0.71,
+      "turnover": 3.64
+    },
+    {
+      "date": "2026-08-18",
+      "close": 123.18,
+      "pct_chg": -0.01,
+      "turnover": 3.5
+    },
+    {
+      "date": "2026-08-19",
+      "close": 124.07,
+      "pct_chg": 0.72,
+      "turnover": 3.14
+    },
+    {
+      "date": "2026-08-20",
+      "close": 125.68,
+      "pct_chg": 1.3,
+      "turnover": 2.87
+    },
+    {
+      "date": "2026-08-21",
+      "close": 127.67,
+      "pct_chg": 1.58,
+      "turnover": 2.96
+    },
+    {
+      "date": "2026-08-24",
+      "close": 129.59,
+      "pct_chg": 1.5,
+      "turnover": 3.31
+    },
+    {
+      "date": "2026-08-25",
+      "close": 130.99,
+      "pct_chg": 1.08,
+      "turnover": 3.61
+    },
+    {
+      "date": "2026-08-26",
+      "close": 131.54,
+      "pct_chg": 0.42,
+      "turnover": 3.58
+    },
+    {
+      "date": "2026-08-27",
+      "close": 131.11,
+      "pct_chg": -0.33,
+      "turnover": 3.24
+    },
+    {
+      "date": "2026-08-28",
+      "close": 129.85,
+      "pct_chg": -0.96,
+      "turnover": 2.92
+    },
+    {
+      "date": "2026-08-31",
+      "close": 128.11,
+      "pct_chg": -1.34,
+      "turnover": 2.9
+    },
+    {
+      "date": "2026-09-01",
+      "close": 126.37,
+      "pct_chg": -1.36,
+      "turnover": 3.2
+    },
+    {
+      "date": "2026-09-02",
+      "close": 125.07,
+      "pct_chg": -1.03,
+      "turnover": 3.55
+    },
+    {
+      "date": "2026-09-03",
+      "close": 124.54,
+      "pct_chg": -0.42,
+      "turnover": 3.62
+    },
+    {
+      "date": "2026-09-04",
+      "close": 125.36,
+      "pct_chg": 0.66,
+      "turnover": 3.35
+    },
+    {
+      "date": "2026-09-07",
+      "close": 126.28,
+      "pct_chg": 0.73,
+      "turnover": 2.99
+    },
+    {
+      "date": "2026-09-08",
+      "close": 127.59,
+      "pct_chg": 1.04,
+      "turnover": 2.86
+    },
+    {
+      "date": "2026-09-09",
+      "close": 129.5,
+      "pct_chg": 1.5,
+      "turnover": 3.09
+    },
+    {
+      "date": "2026-09-10",
+      "close": 132.03,
+      "pct_chg": 1.95,
+      "turnover": 3.47
+    },
+    {
+      "date": "2026-09-11",
+      "close": 134.95,
+      "pct_chg": 2.21,
+      "turnover": 3.64
+    },
+    {
+      "date": "2026-09-14",
+      "close": 137.95,
+      "pct_chg": 2.22,
+      "turnover": 3.45
+    },
+    {
+      "date": "2026-09-15",
+      "close": 140.64,
+      "pct_chg": 1.95,
+      "turnover": 3.08
+    },
+    {
+      "date": "2026-09-16",
+      "close": 142.76,
+      "pct_chg": 1.51,
+      "turnover": 2.86
+    },
+    {
+      "date": "2026-09-17",
+      "close": 144.26,
+      "pct_chg": 1.05,
+      "turnover": 3.0
+    },
+    {
+      "date": "2026-09-18",
+      "close": 145.31,
+      "pct_chg": 0.73,
+      "turnover": 3.37
+    },
+    {
+      "date": "2026-09-21",
+      "close": 146.27,
+      "pct_chg": 0.66,
+      "turnover": 3.63
+    },
+    {
+      "date": "2026-09-22",
+      "close": 147.54,
+      "pct_chg": 0.87,
+      "turnover": 3.54
+    },
+    {
+      "date": "2026-09-23",
+      "close": 149.43,
+      "pct_chg": 1.28,
+      "turnover": 3.19
+    },
+    {
+      "date": "2026-09-24",
+      "close": 152.05,
+      "pct_chg": 1.75,
+      "turnover": 2.89
+    },
+    {
+      "date": "2026-09-25",
+      "close": 155.27,
+      "pct_chg": 2.12,
+      "turnover": 2.93
+    },
+    {
+      "date": "2026-09-28",
+      "close": 158.76,
+      "pct_chg": 2.25,
+      "turnover": 5.04
+    },
+    {
+      "date": "2026-09-29",
+      "close": 156.14,
+      "pct_chg": -1.65,
+      "turnover": 5.04
+    },
+    {
+      "date": "2026-09-30",
+      "close": 153.56,
+      "pct_chg": -1.65,
+      "turnover": 5.04
+    },
+    {
+      "date": "2026-10-01",
+      "close": 151.03,
+      "pct_chg": -1.65,
+      "turnover": 5.04
+    },
+    {
+      "date": "2026-10-02",
+      "close": 148.54,
+      "pct_chg": -1.65,
+      "turnover": 5.04
+    }
+  ],
+  "news": [
+    {
+      "date": "2026-08-20",
+      "title": "[EV_20260820_01_a3f1] 中际旭创披露2026半年报800G出货高增，同时提示高速EML光芯片阶段性紧缺",
+      "summary": "公司2026H1营收与归母净利润同比高增，800G光模块出货量维持全球领先；但管理层同时提示上游部分高速EML光芯片存在结构性紧缺，短期或制约Q4出货上限。"
+    },
+    {
+      "date": "2026-09-18",
+      "title": "[EV_20260918_01_b7c2] 自研硅光SiPh方案良率突破并解除EML芯片瓶颈，1.6T进入规模量产准备",
+      "summary": "800G业绩利好已充分反映于股价高位（TH_02切换为PRICED_IN）；同时公司自研硅光（SiPh）方案出货占比突破35%并锁定CW光源长协，实质性解除EML光芯片瓶颈（证伪TH_03），1.6T光模块进入Q4量产准备。"
+    },
+    {
+      "date": "2026-10-12",
+      "title": "[EV_20261012_01_d9e4] 北美核心CSP客户上修2026Q4 1.6T光模块排产订单",
+      "summary": "北美重点云厂商客户进一步上修2026Q4 1.6T光模块排产指引，公司1.6T首发份额与硅光良率优势持续强化（确认并上修TH_01权重）。"
+    }
+  ]
+}

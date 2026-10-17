@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "event": {
+    "event_id": "EV_20261012_01_d9e4",
+    "stock_code": "300308.SZ",
+    "stock_name": "中际旭创",
+    "published_at": "2026-10-12 18:00:00",
+    "source": "三季报预告及北美供应链跟踪",
+    "title": "北美核心CSP客户上修2026Q4 1.6T光模块排产订单",
+    "content": "北美重点云厂商客户进一步上修2026Q4 1.6T光模块排产指引，公司1.6T首发份额与硅光良率优势持续强化（确认并上修TH_01权重）。",
+    "evidence_type": "EMPIRICAL_NEWS_FILING"
+  },
+  "analysis": {
+    "event_summary": "2025Q2北美800G光模块出货量环比增长35%，硅光渗透率提升带动毛利率改善。",
+    "entities": [
+      {
+        "name": "中际旭创",
+        "type": "公司"
+      },
+      {
+        "name": "800G光模块",
+        "type": "产品"
+      }
+    ],
+    "event_type": "供应链与业绩催化",
+    "impact_direction": "positive",
+    "risk_level": "low",
+    "confidence": 0.91,
+    "evidence": [
+      "800G环比高增35%",
+      "毛利率提升1.6pct"
+    ]
+  },
+  "model": "qwen-plus",
+  "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  "call_success": true,
+  "from_cache": false,
+  "is_demo_fallback": false,
+  "status_label": "真实 Qwen API 调用成功",
+  "latency_ms": 0
+}

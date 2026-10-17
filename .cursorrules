@@ -1,0 +1,18 @@
+# Fin-MemKG Project Rules & Constraints
+
+## 1. Architecture & Code Budget
+- Total codebase MUST stay under 1,000 lines of clean, modular Python 3.10+ code.
+- NO graph databases (Neo4j), NO heavy Agent frameworks (LangChain, LlamaIndex, AutoGen).
+- Use ONLY local files (Markdown + JSON), `networkx`, `pydantic`, `pandas`, `akshare`, and native `openai` SDK.
+
+## 2. Temporal Isolation (Strict No Look-Ahead Bias)
+- Every data-fetching or verification function in `tools.py` MUST accept `as_of_date: str` (YYYY-MM-DD).
+- Never use `datetime.now()` for logic evaluation. Always filter market data and news strictly by `timestamp <= as_of_date`.
+
+## 3. Separation of LLM Reasoning and Quantitative Math
+- LLM outputs structured JSON patches (`CONFIRM`, `INVALIDATE`, `PRICED_IN`, `ADD_NODE`) validated by Pydantic.
+- Node effective driving force $S(v_i)$ and multi-hop contagion decay MUST be computed deterministically in Python, NEVER calculated by the LLM inside prompts.
+
+## 4. Resilience for Live Classroom Demo
+- All `akshare` network calls MUST have local disk caching (`memory/L4_archive/cache/`) and a 5-second timeout fallback so live demos never hang due to network/anti-scraping issues.
+- Keep L0 + L1 resident prompt context strictly under 2,500 tokens. Load L2 JSON graphs strictly on-demand.

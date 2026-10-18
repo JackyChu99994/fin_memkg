@@ -261,37 +261,84 @@ def fetch_market_data(stock_code: str, as_of_date: str) -> dict:
             cached.setdefault("fallback_reason", None)
             return cached
 
-    clean_code, box = _clean_symbol(stock_code), {"klines": [], "news": [], "err": None}
+    clean_code = _clean_symbol(stock_code)
+    box = {"klines": [], "news": [], "err": None, "news_err": None, "market_source": None}
+
+    def _market_prefix(code: str) -> str:
+        return "sh" if code.startswith(("6", "9")) else ("bj" if code.startswith(("4", "8")) else "sz")
+
+    def _trim(rows: list[dict]) -> list[dict]:
+        return sorted((r for r in rows if r["date"] <= cutoff), key=lambda r: r["date"])[-60:]
 
     def _worker() -> None:
         try:
             import akshare as ak
-            df_k = ak.stock_zh_a_hist(symbol=clean_code, period="daily", end_date=cutoff.replace("-", ""), adjust="qfq")
+        except Exception as exc:
+            box["err"] = exc
+            return
+        start = (datetime.fromisoformat(cutoff) - timedelta(days=180)).strftime("%Y%m%d")
+        end = cutoff.replace("-", "")
+
+        # Eastmoney first, then Sina/Tencent as fallbacks (Eastmoney is blocked on some networks).
+        try:
+            df_k = ak.stock_zh_a_hist(symbol=clean_code, period="daily", start_date=start, end_date=end, adjust="qfq")
             if df_k is not None and not df_k.empty:
-                df_k["日期"] = df_k["日期"].astype(str).str.slice(0, 10)
-                df_k = df_k[df_k["日期"] <= cutoff].sort_values("日期").tail(60)
-                box["klines"] = [
+                box["klines"] = _trim([
                     {"date": str(r["日期"])[:10], "close": float(r["收盘"]), "pct_chg": float(r.get("涨跌幅", 0.0)), "turnover": float(r.get("换手率", 0.0))}
                     for _, r in df_k.iterrows()
-                ]
+                ])
+                box["market_source"] = "eastmoney"
+        except Exception as exc:
+            box["err"] = exc
+
+        if len(box["klines"]) < 20:
+            try:
+                df_s = ak.stock_zh_a_daily(symbol=_market_prefix(clean_code) + clean_code, start_date=start, end_date=end, adjust="qfq")
+                if df_s is not None and not df_s.empty:
+                    df_s = df_s.copy()
+                    df_s["pct_chg"] = df_s["close"].pct_change().fillna(0.0) * 100
+                    df_s["turnover"] = pd.to_numeric(df_s["turnover"], errors="coerce").fillna(0.0) * 100
+                    box["klines"] = _trim([
+                        {"date": str(r["date"])[:10], "close": float(r["close"]), "pct_chg": float(r["pct_chg"]), "turnover": float(r["turnover"])}
+                        for _, r in df_s.iterrows()
+                    ])
+                    box["market_source"] = "sina"
+            except Exception as exc:
+                box["err"] = exc
+
+        if len(box["klines"]) < 20:
+            try:
+                df_t = ak.stock_zh_a_hist_tx(symbol=_market_prefix(clean_code) + clean_code, start_date=start, end_date=end, adjust="qfq")
+                if df_t is not None and not df_t.empty:
+                    df_t = df_t.copy()
+                    df_t["pct_chg"] = df_t["close"].pct_change().fillna(0.0) * 100
+                    df_t["turnover"] = pd.to_numeric(df_t["turnover"], errors="coerce").fillna(0.0) * 100
+                    box["klines"] = _trim([
+                        {"date": str(r["date"])[:10], "close": float(r["close"]), "pct_chg": float(r["pct_chg"]), "turnover": float(r["turnover"])}
+                        for _, r in df_t.iterrows()
+                    ])
+                    box["market_source"] = "tencent"
+            except Exception as exc:
+                box["err"] = exc
+
+        try:
             df_n = ak.stock_news_em(symbol=clean_code)
             if df_n is not None and not df_n.empty:
-                if "新闻标题" in df_n.columns:
-                    df_n = df_n[df_n["新闻标题"].astype(str).str.contains("", regex=False, na=False)]
                 items = [
                     {"date": str(r.get("发布时间", ""))[:10], "title": str(r.get("新闻标题", "")), "summary": str(r.get("新闻内容", ""))[:160]}
                     for _, r in df_n.iterrows() if str(r.get("发布时间", ""))[:10] <= cutoff
                 ]
                 box["news"] = sorted(items, key=lambda x: x["date"], reverse=True)[:15]
         except Exception as exc:
-            box["err"] = exc
+            box["news_err"] = exc
 
     t = threading.Thread(target=_worker, daemon=True)
     t.start()
     t.join(timeout=5.0)
-    if not t.is_alive() and box["err"] is None and len(box["klines"]) >= 20:
+    if not t.is_alive() and len(box["klines"]) >= 20:
         klines, news_list = box["klines"], box["news"]
-        read_mode, origin, fb_reason = "LIVE_FETCH", "REAL_MARKET_API", None
+        read_mode, origin = "LIVE_FETCH", "REAL_MARKET_API"
+        fb_reason = f"market_source={box['market_source']}; news unavailable: {box['news_err']}" if box["news_err"] else f"market_source={box['market_source']}"
     else:
         fb_reason = "akshare request timeout (>5.0s)" if t.is_alive() else f"akshare error or insufficient bars: {box['err']}"
         logger.warning("fetch_market_data fallback to SYNTHETIC_SIMULATION for %s (as_of=%s): %s", stock_code, cutoff, fb_reason)

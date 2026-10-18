@@ -24,6 +24,7 @@
       "relation": "COST_SQUEEZE",
       "hop": 1,
       "transmission_sign": "-1",
+      "shock_semantics": "NEGATIVE_SHOCK",
       "gamma": 0.85,
       "keywords": ["磷化铟", "晶圆产线", "衬底", "InP", "Lumentum", "停产检修"],
       "description": "晶圆短缺推升海外EML光芯片成本并导致交付受阻"
@@ -104,6 +105,7 @@
       "relation": "COST_SQUEEZE",
       "hop": 1,
       "transmission_sign": "-1",
+      "shock_semantics": "NEGATIVE_SHOCK",
       "gamma": 0.78,
       "keywords": ["动力电池厂", "碳酸锂让利"],
       "description": "锂精矿拍卖价下调与让利长协增厚中游动力电池龙头单位毛利"
@@ -154,6 +156,7 @@
       "relation": "COST_SQUEEZE",
       "hop": 1,
       "transmission_sign": "-1",
+      "shock_semantics": "NEGATIVE_SHOCK",
       "gamma": 0.82,
       "keywords": ["BIS出口管制", "BIS", "光刻耗材断供"],
       "description": "北美BIS出口管制限制关键光刻耗材，短期压制先进制程稼动率"
@@ -164,6 +167,7 @@
       "relation": "UPSTREAM_DRIVES",
       "hop": 1,
       "transmission_sign": "+1",
+      "shock_semantics": "NEGATIVE_SHOCK",
       "gamma": 0.86,
       "keywords": ["ASML", "阿斯麦", "光刻机受限"],
       "description": "海外高端光刻机受限倒逼国内晶圆厂扩充多重曝光工艺"
@@ -184,6 +188,7 @@
       "relation": "COST_SQUEEZE",
       "hop": 1,
       "transmission_sign": "-1",
+      "shock_semantics": "NEGATIVE_SHOCK",
       "gamma": 0.80,
       "keywords": ["Hynix_HBM", "HBM3e", "高带宽存储"],
       "description": "海外HBM3e良率波动导致高带宽存储交期拉长"

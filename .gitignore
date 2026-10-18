@@ -21,3 +21,13 @@ workspace/
 
 # Generated task output
 result.txt
+
+# Generated response caches and local eval runs
+memory/eval_llm_cache/
+memory/demo_cache/
+memory/graph_demo_cache/
+memory/L4_archive/qwen_demo_cache/
+memory/L4_archive/runs/
+
+# uv cache used for local dependency installs
+.uv-cache/

@@ -1,0 +1,104 @@
+{
+  "run_id": "run_real12_20261018T144942Z",
+  "timestamp": "20261018T144942Z",
+  "evaluation_mode": "LIVE_LLM_BENCHMARK",
+  "source": "LIVE_LLM_BENCHMARK:run_real12_20261018T144942Z",
+  "dataset": "real12",
+  "sample_count": 12,
+  "scenario_counts": {
+    "TEMPORAL_REVERSAL": 6,
+    "PRICED_IN_TRAP": 3,
+    "SECTOR_CONTAGION": 3
+  },
+  "model_name": "qwen-plus",
+  "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  "generation_params": {
+    "temperature": 0.0,
+    "max_tokens": 2600,
+    "max_tokens_retry": 4096,
+    "timeout": 60.0,
+    "max_retries": 1,
+    "lexical_top_k": 3,
+    "b1_max_context_chars": 12000,
+    "b0_momentum_threshold_pct": 3.0,
+    "car_3class_threshold_pct": 1.5,
+    "bootstrap_iterations": 1000,
+    "bootstrap_seed": 42
+  },
+  "input_version": "v4_unified_single_and_graph",
+  "connectivity_check": {
+    "ok": true,
+    "model": "qwen-plus",
+    "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "latency_ms": 2533,
+    "parsed": {
+      "status": "ok"
+    }
+  },
+  "knowledge_disclosure": {
+    "B0: 20-Day Price Momentum Baseline (±3% Threshold, 0-Token)": {
+      "historical_text": "None (0-Token pure price momentum baseline)",
+      "market_regime_indicators": "return_20d_pct only (>=+3% BULLISH, <=-3% BEARISH, else NEUTRAL)",
+      "candidate_thesis_ids": false,
+      "supply_chain_prior": false,
+      "l2_graph_structure": false
+    },
+    "B1: Long-History Context + LLM (Full-Text)": {
+      "historical_text": "All available historical chunks (deduplicated, char-capped at 12,000 chars)",
+      "market_regime_indicators": true,
+      "candidate_thesis_ids": "Minimal ID+Title list only (no weights/edges/priced_in state)",
+      "supply_chain_prior": false,
+      "l2_graph_structure": false
+    },
+    "B2: Lexical Top-K Retrieval + LLM (Char-Bigram Top-3)": {
+      "historical_text": "Top-3 chunks by char-bigram cosine similarity",
+      "market_regime_indicators": true,
+      "candidate_thesis_ids": "Minimal ID+Title list only (no weights/edges/priced_in state)",
+      "supply_chain_prior": false,
+      "l2_graph_structure": false
+    },
+    "B2+Prior: Lexical Top-K + Supply-Chain Text Prior + LLM (Top-3)": {
+      "historical_text": "Top-3 chunks by char-bigram cosine similarity",
+      "market_regime_indicators": true,
+      "candidate_thesis_ids": "Minimal ID+Title list only (no weights/edges/priced_in state)",
+      "supply_chain_prior": "Flat text description of sector_chains.json edges",
+      "l2_graph_structure": false
+    },
+    "Ablation A: w/o Invalidation Only": {
+      "historical_text": "Compressed into L2 ThesisGraph",
+      "market_regime_indicators": true,
+      "candidate_thesis_ids": "Full L2Graph nodes & edges (INVALIDATE disabled)",
+      "supply_chain_prior": "2-Hop sector_chains.json DiGraph",
+      "l2_graph_structure": true
+    },
+    "Ablation B: w/o Priced-in Only": {
+      "historical_text": "Compressed into L2 ThesisGraph",
+      "market_regime_indicators": "Basic return/rank only (priced_in_ratio & PRICED_IN op disabled)",
+      "candidate_thesis_ids": "Full L2Graph nodes & edges",
+      "supply_chain_prior": "2-Hop sector_chains.json DiGraph",
+      "l2_graph_structure": true
+    },
+    "Ablation C1: w/o Supply-Chain Prior & KG Edges (Node-Only)": {
+      "historical_text": "Compressed into L2 ThesisGraph",
+      "market_regime_indicators": true,
+      "candidate_thesis_ids": "L2Graph nodes only (edges & supply-chain graph disabled)",
+      "supply_chain_prior": false,
+      "l2_graph_structure": "Nodes only (max_hops=0, use_edges=False)"
+    },
+    "Ablation C2: 1-Hop KG Only (cutoff=1)": {
+      "historical_text": "Compressed into L2 ThesisGraph",
+      "market_regime_indicators": true,
+      "candidate_thesis_ids": "Full L2Graph nodes & edges",
+      "supply_chain_prior": "1-Hop sector_chains.json DiGraph (cutoff=1)",
+      "l2_graph_structure": true
+    },
+    "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+      "historical_text": "Compressed into L2 ThesisGraph",
+      "market_regime_indicators": true,
+      "candidate_thesis_ids": "Full L2Graph nodes & edges",
+      "supply_chain_prior": "2-Hop sector_chains.json DiGraph (cutoff=2)",
+      "l2_graph_structure": true
+    }
+  },
+  "records_path": "/Users/huaijinchu/Desktop/fin_memkg/memory/L4_archive/runs/run_real12_20261018T144942Z/records.jsonl"
+}

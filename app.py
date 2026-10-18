@@ -12,15 +12,19 @@ from plotly.subplots import make_subplots
 from pyvis.network import Network
 
 from agent_loop import (
+    GRAPH_MAX_TOKENS,
+    GRAPH_MAX_TOKENS_RETRY,
+    LLM_TIMEOUT,
     QwenAPIError,
-    analyze_demo_event,
     cold_start_stock,
-    get_builtin_demo_result,
     load_qwen_config,
     run_agent_inference,
+    run_builtin_graph_demo_pipeline,
 )
+from schema import check_inference_consistency
 from tools import (
     L2_DIR,
+    classify_event_polarity,
     fetch_market_data,
     find_contagion_paths,
     load_l2_graph,
@@ -163,7 +167,10 @@ with st.sidebar:
     st.markdown(f"- **QWEN_API_KEY**：`{'已设置' if qwen_cfg['has_api_key'] else '未设置'}`")
     st.markdown(f"- **QWEN_MODEL**：`{qwen_cfg['model'] or '未设置'}`")
     st.markdown(f"- **QWEN_BASE_URL**：  \n  `{qwen_cfg['base_url']}`")
-    st.caption("固定使用阿里云 DashScope OpenAI 兼容 Chat Completions 接口（`max_retries=0`，不读取 OPENAI_* 等多套变量）。")
+    st.caption(
+        f"固定使用阿里云 DashScope OpenAI 兼容 Chat Completions 接口（`max_tokens={GRAPH_MAX_TOKENS}/{GRAPH_MAX_TOKENS_RETRY}`, "
+        f"`timeout={LLM_TIMEOUT:.0f}s`；截断/5xx/超时最多重试 1 次，401/403/404 不重试）。"
+    )
 
     st.markdown("### 🛡️ 运行时透明审计徽章")
     inf_mode = meta.get("inference_mode", "READY (待触发推演)")
@@ -171,8 +178,17 @@ with st.sidebar:
     data_orig = meta.get("underlying_data_origin", l3_info.get("underlying_data_origin", "SYNTHETIC_SIMULATION"))
     tok_type = meta.get("token_count_type", "MISSING_OR_ESTIMATED")
     p_mod = meta.get("persistence_mode", "IN_MEMORY_PREVIEW (零写盘隔离)")
+    retry_cnt = meta.get("retry_count", 0)
+    f_reason = meta.get("finish_reason", "-")
+    repaired_flag = bool(meta.get("json_repaired", False))
 
-    st.info(f"**推理引擎 (`inference_mode`)**：\n`{inf_mode}`\nModel: `{meta.get('llm_model', qwen_cfg['model'])}`")
+    st.info(
+        f"**推理引擎 (`inference_mode`)**：\n`{inf_mode}`\n"
+        f"Model: `{meta.get('llm_model', qwen_cfg['model'])}`\n"
+        f"finish_reason: `{f_reason}` | retry_count: `{retry_cnt}`"
+    )
+    if repaired_flag:
+        st.warning("🔧 **JSON 尾部修补 (`json_repaired=True`)**：本次输出经尾部闭合修补并通过 Pydantic 校验")
     st.success(f"**1. 读取介质 (`storage_read_mode`)**：\n`{read_mode}`")
     if data_orig == "REAL_MARKET_API":
         st.success(f"**2. 底层源产地 (`underlying_data_origin`)**：\n`{data_orig}`")
@@ -255,21 +271,17 @@ with col_left:
 
     if clicked_demo:
         try:
-            single_demo = get_builtin_demo_result(event_payload)
-            out = run_agent_inference(
+            out = run_builtin_graph_demo_pipeline(
                 cur_code,
-                g_cur.stock_name,
                 event_payload,
                 as_of_date=as_of_input,
+                stock_name=g_cur.stock_name,
                 persist=persist_chk,
-                use_builtin_demo=True,
-                use_cache=False,
             )
             st.session_state["last_res"] = {
                 "stock": cur_code,
                 "as_of_date": as_of_input,
                 "res": out,
-                "single": single_demo,
                 "injected_event": {
                     "event_id": out["event_id"],
                     "published_at": f"{as_of_input} 09:30:00",
@@ -281,6 +293,7 @@ with col_left:
             st.session_state.pop("last_err", None)
             st.rerun()
         except Exception as err:
+            st.session_state.pop("last_res", None)
             st.session_state["last_err"] = {
                 "error_type": "演示执行异常",
                 "message": str(err),
@@ -288,9 +301,8 @@ with col_left:
             }
 
     if clicked_qwen_api:
-        with st.spinner("正在调用阿里云 DashScope Qwen API 执行单事件结构化抽取与 L2 图谱状态更新..."):
+        with st.spinner("正在调用阿里云 DashScope Qwen API 执行统一事件分析与 L2 图谱状态更新..."):
             try:
-                single_live = analyze_demo_event(event_payload, use_cache=use_cache_chk)
                 out = run_agent_inference(
                     cur_code,
                     g_cur.stock_name,
@@ -304,7 +316,6 @@ with col_left:
                     "stock": cur_code,
                     "as_of_date": as_of_input,
                     "res": out,
-                    "single": single_live,
                     "injected_event": {
                         "event_id": out["event_id"],
                         "published_at": f"{as_of_input} 09:30:00",
@@ -316,18 +327,23 @@ with col_left:
                 st.session_state.pop("last_err", None)
                 st.rerun()
             except QwenAPIError as err:
+                # 捕获 QwenAPIError 时立即清空上一次成功结果，绝不将旧结果冒充为本次结果展示
+                st.session_state.pop("last_res", None)
                 st.session_state["last_err"] = err.to_dict()
+                st.rerun()
             except Exception as err:
+                st.session_state.pop("last_res", None)
                 st.session_state["last_err"] = {
                     "error_type": f"执行异常 ({type(err).__name__})",
                     "message": str(err),
                     "hint": "请检查输入参数或点击“使用演示结果”查看内置图谱演示。",
                 }
+                st.rerun()
 
     if st.session_state.get("last_err"):
         err_obj = st.session_state["last_err"]
         if isinstance(err_obj, dict):
-            st.error(f"❌ **调用失败：{err_obj.get('error_type', '错误')}**")
+            st.error(f"❌ **Qwen API 调用失败，未生成真实分析结果：{err_obj.get('error_type', '错误')}**")
             st.markdown(f"- **原因**：`{err_obj.get('message', '')}`")
             st.markdown(f"- **下一步提示**：{err_obj.get('hint', '')}")
             if err_obj.get("raw_output"):
@@ -361,16 +377,24 @@ with col_mid:
         else:
             st.success(f"✅ **{r.get('status_label', '真实 Qwen API 图谱推演成功')}**")
 
+        if r.get("execution_meta", {}).get("json_repaired"):
+            st.warning("🔧 **提示：本次模型输出在末尾闭合处触发了 `_repair_truncated_json` 修补，并已通过完整 Pydantic 校验。**")
+
+        warnings_list = r.get("consistency_warnings") or check_inference_consistency(r["inference"])
+        for w_msg in warnings_list:
+            st.warning(f"⚠️ **{w_msg}**")
+
     components.html(_render_pyvis_html(g_cur), height=390, scrolling=False)
 
+    preview_polarity = classify_event_polarity(f"{ev_title} {ev_body}")
     live_paths = (
         res_state["res"].get("contagion_paths", []) if has_active_res else []
-    ) or find_contagion_paths(f"{ev_title} {ev_body}", cur_code)
+    ) or find_contagion_paths(f"{ev_title} {ev_body}", cur_code, event_polarity=preview_polarity)
     if live_paths:
         tp = live_paths[0]
         st.info(
-            f"🔗 **跨公司两跳三节点传导路径 (`actual_hops={tp['actual_hops']}`)**：`{tp['path']}`\n\n"
-            f"- **公式折算**：$\\sigma={tp['transmission_sign']},\\ \\gamma_{{\\text{{total}}}}={tp['gamma_total']},\\ \\lambda={tp['lambda_decay']} \\Rightarrow \\text{{PathFactor}}={tp['path_factor']:+.4f}$\n"
+            f"🔗 **跨公司两跳三节点传导路径 (`actual_hops={tp['actual_hops']}` | `event_polarity={tp.get('event_polarity', 0):+d}`)**：`{tp['path']}`\n\n"
+            f"- **公式折算**：$\\sigma_{{\\text{{eff}}}}={tp['transmission_sign']},\\ \\gamma_{{\\text{{total}}}}={tp['gamma_total']},\\ \\lambda={tp['lambda_decay']} \\Rightarrow \\text{{PathFactor}}={tp['path_factor']:+.4f}$\n"
             f"- **逐跳明细**：{tp['description']}"
         )
 
@@ -395,22 +419,26 @@ with col_mid:
 with col_right:
     st.subheader("3️⃣ 单事件要素、L3 经验分位 & L4 证据溯源")
 
-    if has_active_res and res_state.get("single"):
-        s_res = res_state["single"]
-        s_ana = s_res.get("analysis", {})
+    if has_active_res:
+        r = res_state["res"]
+        inf_obj = r["inference"]
+        meta_obj = r.get("execution_meta", {})
         with st.container(border=True):
-            st.markdown("##### 🎯 单事件结构化分析结果 (`DemoEventAnalysis`)")
+            st.markdown("##### 🎯 单事件结构化分析结果（同源 `InferenceResponse.event_*`）")
             sc1, sc2, sc3 = st.columns(3)
-            sc1.metric("事件类型", s_ana.get("event_type", "-"))
-            sc2.metric("影响方向 / 风险", f"{s_ana.get('impact_direction', '-')} / {s_ana.get('risk_level', '-')}")
-            sc3.metric("置信度", f"{float(s_ana.get('confidence', 0.0)):.2f}")
-            st.markdown(f"**事件摘要**：{s_ana.get('event_summary', '')}")
-            ents = s_ana.get("entities", [])
-            if ents:
-                ent_tags = " ".join([f"`{e.get('name')}({e.get('type')})`" for e in ents])
+            sc1.metric("事件类型", inf_obj.event_type or "-")
+            sc2.metric("影响方向 / 风险", f"{inf_obj.impact_direction} / {inf_obj.risk_level}")
+            sc3.metric("置信度", f"{float(inf_obj.event_confidence or inf_obj.t5_forecast.confidence):.2f}")
+            st.markdown(f"**事件摘要**：{inf_obj.event_summary}")
+            if inf_obj.entities:
+                ent_tags = " ".join([f"`{e.name}({e.type})`" for e in inf_obj.entities])
                 st.markdown(f"**识别实体**：{ent_tags}")
             st.caption(
-                f"当前模型：`{s_res.get('model', '-')}` | 调用成功：`{'是' if s_res.get('call_success') else '否(演示数据)'}` | 来自缓存：`{'是' if s_res.get('from_cache') else '否'}`"
+                f"当前模型：`{meta_obj.get('llm_model', '-')}` | "
+                f"调用成功：`{'否(演示数据)' if r.get('is_demo_fallback') else '是'}` | "
+                f"来自缓存：`{'是' if r.get('from_cache') else '否'}` | "
+                f"finish_reason：`{meta_obj.get('finish_reason', '-')}` | "
+                f"retry_count：`{meta_obj.get('retry_count', 0)}`"
             )
 
     m_data = fetch_market_data(cur_code, as_of_dt)

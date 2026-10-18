@@ -1,0 +1,55 @@
+run_id=run_real12_20261018T144942Z mode=LIVE_LLM_BENCHMARK
+dataset=real12 N=12 scenarios={'TEMPORAL_REVERSAL': 6, 'PRICED_IN_TRAP': 3, 'SECTOR_CONTAGION': 3}
+model=qwen-plus params={'temperature': 0.0, 'max_tokens': 2600, 'max_tokens_retry': 4096, 'timeout': 60.0, 'max_retries': 1, 'lexical_top_k': 3, 'b1_max_context_chars': 12000, 'b0_momentum_threshold_pct': 3.0, 'car_3class_threshold_pct': 1.5, 'bootstrap_iterations': 1000, 'bootstrap_seed': 42}
+
+== Summary ==
+method       valid/fail     acc  macroF1  nodeF1   LS_CAR  tokens   lat_ms
+--------------------------------------------------------------------------
+B0              12/0      33.3%    24.8%    0.0%   +0.45%       0        0
+B1              12/0      66.7%    45.2%   75.0%   +3.55%    2349    18310
+B2              12/0      58.3%    40.3%   91.7%   +3.60%    2347    18353
+B2+Prior        12/0      58.3%    38.1%   75.0%   +3.21%    2621    17968
+Abl-A           12/0      75.0%    55.6%   66.7%   +6.14%    3763    17993
+Abl-B           12/0      83.3%    57.4%   78.3%   +6.02%    3694    16666
+Abl-C1          12/0      91.7%    63.6%  100.0%   +7.10%    3462    15375
+Abl-C2          12/0      83.3%    60.0%  100.0%   +6.65%    3508    16217
+Ours            12/0      83.3%    60.0%  100.0%   +6.65%    3630    15865
+
+== Per-case (pred_dir / invalidation hit) ==
+case        gt        car              B0         B1         B2   B2+Prior      Abl-A      Abl-B     Abl-C1     Abl-C2       Ours
+  (BULL/BEAR/NEUT + node-hit; '-' = wrong/missing invalidation id)
+REAL_01     BEARISH     -7.84       BEAR-      NEUT+      NEUT+      NEUT+      BEAR-      BEAR+      BEAR+      BEAR+      BEAR+
+REAL_02     BEARISH     -6.93       BULL-      BULL-      BULL+      NEUT-      NEUT+      BULL-      NEUT+      NEUT+      NEUT+
+REAL_03     BEARISH    -15.75       BEAR-      NEUT+      NEUT+      NEUT+      BEAR-      BEAR+      BEAR+      BEAR+      BEAR+
+REAL_04     BEARISH     -6.05       BULL-      BULL-      NEUT+      BULL-      NEUT+      NEUT-      BEAR+      BEAR+      BEAR+
+REAL_05     BULLISH     +7.53       NEUT-      BULL+      BULL+      BULL+      BULL+      BULL+      BULL+      BULL+      BULL+
+REAL_06     BULLISH    +10.35       BEAR-      BULL+      BULL+      BULL+      BULL+      BULL+      BULL+      BULL+      BULL+
+REAL_07     BEARISH     -3.50       BEAR-      BEAR+      BEAR+      BEAR+      BEAR-      BEAR+      BEAR+      BEAR+      BEAR+
+REAL_08     BULLISH     +2.43       BEAR-      BULL+      BULL+      BULL+      BULL-      BULL+      BULL+      BULL+      BULL+
+REAL_09     BEARISH     -5.50       BULL-      BEAR-      NEUT-      BULL-      NEUT+      BEAR-      BEAR+      NEUT+      NEUT+
+REAL_10     BULLISH     +8.95       NEUT-      BULL+      BULL+      BULL+      BULL+      BULL+      BULL+      BULL+      BULL+
+REAL_11     BULLISH     +7.75       NEUT-      BULL+      BULL+      BULL+      BULL-      BULL+      BULL+      BULL+      BULL+
+REAL_12     BULLISH     +9.60       BULL-      BULL+      BULL+      BULL+      BULL-      BULL+      BULL+      BULL+      BULL+
+
+== Paired vs Ours (direction correctness; exact McNemar) ==
+vs B0         wins= 6 losses= 0 ties= 6 p=0.031  dCAR=+6.19% CI[+3.12,+9.60]
+vs B1         wins= 3 losses= 1 ties= 8 p=0.625  dCAR=+3.09% CI[+0.09,+6.58]
+vs B2         wins= 3 losses= 0 ties= 9 p=0.250  dCAR=+3.05% CI[+0.58,+5.90]
+vs B2+Prior   wins= 3 losses= 0 ties= 9 p=0.250  dCAR=+3.43% CI[+0.65,+6.56]
+vs Abl-A      wins= 1 losses= 0 ties=11 p=1.000  dCAR=+0.50% CI[+0.00,+1.51]
+vs Abl-B      wins= 1 losses= 1 ties=10 p=1.000  dCAR=+0.62% CI[-0.92,+2.24]
+vs Abl-C1     wins= 0 losses= 1 ties=11 p=1.000  dCAR=-0.46% CI[-1.38,+0.00]
+vs Abl-C2     wins= 0 losses= 0 ties=12 p=1.000  dCAR=+0.00% CI[+0.00,+0.00]
+
+== Scenario accuracy (from summary) ==
+B0         TEMPORAL_REVERSAL=50.0  PRICED_IN_TRAP=0.0  SECTOR_CONTAGION=33.3
+B1         TEMPORAL_REVERSAL=66.7  PRICED_IN_TRAP=33.3  SECTOR_CONTAGION=100.0
+B2         TEMPORAL_REVERSAL=66.7  PRICED_IN_TRAP=0.0  SECTOR_CONTAGION=100.0
+B2+Prior   TEMPORAL_REVERSAL=66.7  PRICED_IN_TRAP=0.0  SECTOR_CONTAGION=100.0
+Abl-A      TEMPORAL_REVERSAL=100.0  PRICED_IN_TRAP=0.0  SECTOR_CONTAGION=100.0
+Abl-B      TEMPORAL_REVERSAL=100.0  PRICED_IN_TRAP=33.3  SECTOR_CONTAGION=100.0
+Abl-C1     TEMPORAL_REVERSAL=100.0  PRICED_IN_TRAP=66.7  SECTOR_CONTAGION=100.0
+Abl-C2     TEMPORAL_REVERSAL=100.0  PRICED_IN_TRAP=33.3  SECTOR_CONTAGION=100.0
+Ours       TEMPORAL_REVERSAL=100.0  PRICED_IN_TRAP=33.3  SECTOR_CONTAGION=100.0
+
+failed_records=0 retry_records=0

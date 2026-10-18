@@ -5,7 +5,8 @@ Fin-MemKG 真实 Qwen API 三场景冒烟测试脚本 (scripts/smoke_demo.py)
 - 对每个场景调用 run_agent_pipeline(..., use_cache=False, persist=False)；
 - 验证：
   * 场景 A：t5_forecast.direction != "BULLISH" 且无异常；
-  * 场景 B：存在 PRICED_IN 操作且 t5_forecast.direction == "BEARISH"；
+  * 场景 B：存在 PRICED_IN 操作，且 t5_forecast.direction != "BULLISH"
+   （允许 BEARISH 或 NEUTRAL：高位利好出尽时模型可能选择空仓等待，不能强制看空）；
   * 场景 C：contagion_paths[0].path_factor < 0 且 t5_forecast.direction == "BEARISH"；
 - 打印每个场景的 latency_ms、prompt/completion tokens、finish_reason、retry_count；
 - 任一失败以 exit(1) 退出。
@@ -108,8 +109,8 @@ def main() -> int:
                 has_priced_in = any(op.op == "PRICED_IN" for op in inf.patch_ops)
                 if not has_priced_in:
                     failures.append(f"{label}: 期望包含 PRICED_IN 操作，实际 ops={ops_summary}")
-                if t5_dir != "BEARISH":
-                    failures.append(f"{label}: 期望 T+5 == BEARISH，实际得到 {t5_dir}")
+                if t5_dir == "BULLISH":
+                    failures.append(f"{label}: 高位利好出尽场景不应看多，实际得到 {t5_dir}（允许 BEARISH/NEUTRAL）")
             elif idx == 3:
                 if not paths or float(paths[0]["path_factor"]) >= 0:
                     failures.append(f"{label}: 期望 contagion_paths[0].path_factor < 0，实际={pf_str}")

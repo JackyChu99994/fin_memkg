@@ -5,10 +5,20 @@
 ## 1. 安装依赖
 
 ```bash
+# macOS / Linux
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+```powershell
+# Windows
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+> 依赖已锁定 `pandas>=2.1.0,<3.0`；`pandas 3.x` 的 Arrow 字符串后端会导致 `akshare.stock_news_em` 报 `ArrowInvalid`。新增的 `pyarrow` 用于本地行情快照（`market_snapshot.py`）。
 
 ## 2. 配置 Qwen 环境变量
 
@@ -18,7 +28,7 @@ pip install -r requirements.txt
 - `QWEN_BASE_URL`（可选，默认：`https://dashscope.aliyuncs.com/compatible-mode/v1`）
 - `QWEN_MODEL`（可选，默认：`qwen-plus`）
 
-可在系统环境变量中导出，或写入项目根目录 `/Users/huaijinchu/Desktop/fin_memkg/.env`：
+可在系统环境变量中导出，或写入**项目根目录**的 `.env` 文件（不要提交到 Git）：
 
 ```ini
 QWEN_API_KEY=你的_DashScope_API_Key
@@ -54,6 +64,8 @@ QWEN_MODEL=qwen-plus
 .venv/bin/python scripts/smoke_demo.py
 ```
 
+> Windows 下把 `.venv/bin/python` 换成 `.venv\Scripts\python.exe`；运行脚本前可设置 `PYTHONUTF8=1` 避免 GBK 解码问题。
+
 ## 4. 调用参数、重试策略与一次点击实际调用次数
 
 1. **生成参数与超时上限**：
@@ -83,3 +95,17 @@ QWEN_MODEL=qwen-plus
 
 - **规则机制自检 (`RULE_MECHANISM_SIMULATION`)**：对应 `memory/L4_archive/benchmark_results.json` 与 `eval_results.csv`（`inference_mode="HEURISTIC_FALLBACK"`），仅用于离线校验状态机算子代码逻辑，**不作为大模型知识图谱增益证据**。
 - **真实 LLM 评测 (`LIVE_LLM_BENCHMARK`)**：通过 `eval_benchmark.py` 执行，每次运行独立写入 `memory/L4_archive/runs/{run_id}/`（含 `run_manifest.json`、`records.jsonl`、`summary.json`、`summary.md`），所有 LLM 方法真实调用同一 `qwen-plus` 模型，失败计入 `failed_cases`。
+
+## 7. 仓库结构（2026-10-18 合并后）
+
+| 路径 | 作用 |
+|---|---|
+| `app.py` | KG 可视化 / 演示工作台（Streamlit） |
+| `agent_loop.py` | KG 推演管线：单事件 + L2 patch + 统一 `InferenceResponse` |
+| `tools.py` | L2/L4 读写、事件极性、两跳传导、行情三级回退、时间隔离 |
+| `schema.py` / `prompts.py` | Pydantic 契约与 Prompt 模板 |
+| `eval_benchmark.py` + `EVALUATION.md` | RealFin / 合成事件真实 LLM 评测 |
+| `ga_core/` | GenericAgent 风格的通用 Agent 内核（工具循环、会话、记忆） |
+| `market_snapshot.py` | 本地行情快照构建与读取（`data/market/` 已 gitignore） |
+| `memory/L0..L4` | 元规则、索引、L2 图谱、L3 技能、L4 证据 |
+| `tests/` | `unittest` + `pytest` 两套回归 |

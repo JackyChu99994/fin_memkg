@@ -1,0 +1,339 @@
+{
+  "run_id": "stability_real12_20261018T152511Z",
+  "timestamp": "2026-10-18T15:43:35.841499+00:00",
+  "evaluation_mode": "LIVE_LLM_STABILITY_CHECK",
+  "methods": [
+    "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)",
+    "Ablation C1: w/o Supply-Chain Prior & KG Edges (Node-Only)"
+  ],
+  "repeats": 3,
+  "summary": {
+    "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+      "repeats": 3,
+      "valid_cases": 12,
+      "repeat_acc_pct": [
+        91.7,
+        83.3,
+        91.7
+      ],
+      "repeat_acc_mean_pct": 88.9,
+      "repeat_acc_std_pct": 4.0,
+      "majority_acc_pct": 83.3,
+      "failed_calls": 0,
+      "live_calls": 36,
+      "avg_tokens": 3641.5
+    },
+    "Ablation C1: w/o Supply-Chain Prior & KG Edges (Node-Only)": {
+      "repeats": 3,
+      "valid_cases": 12,
+      "repeat_acc_pct": [
+        83.3,
+        83.3,
+        91.7
+      ],
+      "repeat_acc_mean_pct": 86.1,
+      "repeat_acc_std_pct": 4.0,
+      "majority_acc_pct": 83.3,
+      "failed_calls": 0,
+      "live_calls": 36,
+      "avg_tokens": 3432.6
+    }
+  },
+  "paired": {
+    "ours_vs_c1_majority": {
+      "wins": 0,
+      "losses": 0,
+      "ties": 12
+    }
+  },
+  "per_case": {
+    "REAL_01": {
+      "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+        "votes": [
+          "BEARISH",
+          "BEARISH",
+          "BEARISH"
+        ],
+        "majority": "BEARISH",
+        "gt": "BEARISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 7.84
+      },
+      "Ablation C1: w/o Supply-Chain Prior & KG Edges (Node-Only)": {
+        "votes": [
+          "BEARISH",
+          "BEARISH",
+          "BEARISH"
+        ],
+        "majority": "BEARISH",
+        "gt": "BEARISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 7.84
+      }
+    },
+    "REAL_02": {
+      "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+        "votes": [
+          "BEARISH",
+          "NEUTRAL",
+          "NEUTRAL"
+        ],
+        "majority": "NEUTRAL",
+        "gt": "BEARISH",
+        "majority_correct": false,
+        "mean_strategy_car_pct": 2.31
+      },
+      "Ablation C1: w/o Supply-Chain Prior & KG Edges (Node-Only)": {
+        "votes": [
+          "NEUTRAL",
+          "NEUTRAL",
+          "BEARISH"
+        ],
+        "majority": "NEUTRAL",
+        "gt": "BEARISH",
+        "majority_correct": false,
+        "mean_strategy_car_pct": 2.31
+      }
+    },
+    "REAL_03": {
+      "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+        "votes": [
+          "BEARISH",
+          "BEARISH",
+          "BEARISH"
+        ],
+        "majority": "BEARISH",
+        "gt": "BEARISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 15.75
+      },
+      "Ablation C1: w/o Supply-Chain Prior & KG Edges (Node-Only)": {
+        "votes": [
+          "BEARISH",
+          "BEARISH",
+          "BEARISH"
+        ],
+        "majority": "BEARISH",
+        "gt": "BEARISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 15.75
+      }
+    },
+    "REAL_04": {
+      "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+        "votes": [
+          "BEARISH",
+          "BEARISH",
+          "BEARISH"
+        ],
+        "majority": "BEARISH",
+        "gt": "BEARISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 6.05
+      },
+      "Ablation C1: w/o Supply-Chain Prior & KG Edges (Node-Only)": {
+        "votes": [
+          "BEARISH",
+          "BEARISH",
+          "BEARISH"
+        ],
+        "majority": "BEARISH",
+        "gt": "BEARISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 6.05
+      }
+    },
+    "REAL_05": {
+      "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 7.53
+      },
+      "Ablation C1: w/o Supply-Chain Prior & KG Edges (Node-Only)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 7.53
+      }
+    },
+    "REAL_06": {
+      "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 10.35
+      },
+      "Ablation C1: w/o Supply-Chain Prior & KG Edges (Node-Only)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 10.35
+      }
+    },
+    "REAL_07": {
+      "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+        "votes": [
+          "BEARISH",
+          "BEARISH",
+          "BEARISH"
+        ],
+        "majority": "BEARISH",
+        "gt": "BEARISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 3.5
+      },
+      "Ablation C1: w/o Supply-Chain Prior & KG Edges (Node-Only)": {
+        "votes": [
+          "BEARISH",
+          "BEARISH",
+          "BEARISH"
+        ],
+        "majority": "BEARISH",
+        "gt": "BEARISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 3.5
+      }
+    },
+    "REAL_08": {
+      "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 2.43
+      },
+      "Ablation C1: w/o Supply-Chain Prior & KG Edges (Node-Only)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 2.43
+      }
+    },
+    "REAL_09": {
+      "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+        "votes": [
+          "NEUTRAL",
+          "NEUTRAL",
+          "BEARISH"
+        ],
+        "majority": "NEUTRAL",
+        "gt": "BEARISH",
+        "majority_correct": false,
+        "mean_strategy_car_pct": 1.83
+      },
+      "Ablation C1: w/o Supply-Chain Prior & KG Edges (Node-Only)": {
+        "votes": [
+          "NEUTRAL",
+          "NEUTRAL",
+          "NEUTRAL"
+        ],
+        "majority": "NEUTRAL",
+        "gt": "BEARISH",
+        "majority_correct": false,
+        "mean_strategy_car_pct": 0.0
+      }
+    },
+    "REAL_10": {
+      "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 8.95
+      },
+      "Ablation C1: w/o Supply-Chain Prior & KG Edges (Node-Only)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 8.95
+      }
+    },
+    "REAL_11": {
+      "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 7.75
+      },
+      "Ablation C1: w/o Supply-Chain Prior & KG Edges (Node-Only)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 7.75
+      }
+    },
+    "REAL_12": {
+      "Ours: Fin-MemKG (Full: Revision + PricedIn + 2-Hop KG)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 9.6
+      },
+      "Ablation C1: w/o Supply-Chain Prior & KG Edges (Node-Only)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 9.6
+      }
+    }
+  }
+}

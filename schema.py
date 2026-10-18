@@ -1,5 +1,4 @@
 from __future__ import annotations
-from pathlib import Path
 from typing import Any, Literal, Optional
 import networkx as nx
 from pydantic import BaseModel, Field, model_validator
@@ -189,6 +188,10 @@ class ExecutionMeta(BaseModel):
     estimated_tokens: Optional[int] = None
     request_hash: Optional[str] = None
     fallback_reason: Optional[str] = None
+    retry_count: int = 0
+    finish_reason: Optional[str] = None
+    json_repaired: bool = False
+    latency_ms: Optional[int] = None
 
     @property
     def market_data_source(self) -> str:
@@ -201,7 +204,18 @@ class HorizonPred(BaseModel):
     reasoning: str
 
 
+class DemoEntity(BaseModel):
+    name: str
+    type: str = "其他"
+
+
 class InferenceResponse(BaseModel):
+    event_summary: str = ""
+    entities: list[DemoEntity] = Field(default_factory=list)
+    event_type: str = ""
+    impact_direction: Literal["positive", "negative", "neutral"] = "neutral"
+    risk_level: Literal["low", "medium", "high"] = "medium"
+    event_confidence: float = Field(default=0.0, ge=0.0, le=1.0)
     patch_ops: list[PatchOp] = Field(default_factory=list)
     contagion_impact: Optional[str] = None
     t1_forecast: HorizonPred
@@ -210,10 +224,50 @@ class InferenceResponse(BaseModel):
     watch_indicators: list[str] = Field(default_factory=list)
     execution_meta: Optional[ExecutionMeta] = None
 
+    @model_validator(mode="before")
+    @classmethod
+    def _normalize_event_fields(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+        out = dict(data)
+        raw_ents = out.get("entities") or []
+        norm_ents: list[dict[str, str]] = []
+        if isinstance(raw_ents, list):
+            for item in raw_ents:
+                if isinstance(item, str) and item.strip():
+                    norm_ents.append({"name": item.strip(), "type": "实体"})
+                elif isinstance(item, dict) and item.get("name"):
+                    norm_ents.append(
+                        {
+                            "name": str(item["name"]),
+                            "type": str(item.get("type") or item.get("entity_type") or "其他"),
+                        }
+                    )
+        out["entities"] = norm_ents
 
-class DemoEntity(BaseModel):
-    name: str
-    type: str = "其他"
+        raw_dir = str(out.get("impact_direction", "neutral")).strip().lower()
+        dir_map = {
+            "bullish": "positive",
+            "positive": "positive",
+            "利好": "positive",
+            "bearish": "negative",
+            "negative": "negative",
+            "利空": "negative",
+            "neutral": "neutral",
+            "中性": "neutral",
+        }
+        out["impact_direction"] = dir_map.get(raw_dir, "neutral")
+
+        raw_risk = str(out.get("risk_level", "medium")).strip().lower()
+        risk_map = {"low": "low", "低": "low", "medium": "medium", "中": "medium", "high": "high", "高": "high"}
+        out["risk_level"] = risk_map.get(raw_risk, "medium")
+
+        if "event_confidence" in out and out["event_confidence"] is not None:
+            try:
+                out["event_confidence"] = max(0.0, min(1.0, float(out["event_confidence"])))
+            except Exception:
+                out["event_confidence"] = 0.0
+        return out
 
 
 class DemoEventAnalysis(BaseModel):
@@ -221,8 +275,8 @@ class DemoEventAnalysis(BaseModel):
     event_summary: str
     entities: list[DemoEntity] = Field(default_factory=list)
     event_type: str
-    impact_direction: Literal["positive", "negative", "neutral"]
-    risk_level: Literal["low", "medium", "high"]
+    impact_direction: Literal["positive", "negative", "neutral"] = "neutral"
+    risk_level: Literal["low", "medium", "high"] = "medium"
     confidence: float = Field(..., ge=0.0, le=1.0)
     evidence: list[str] = Field(default_factory=list)
 
@@ -249,3 +303,42 @@ class DemoEventAnalysis(BaseModel):
         raw_risk = str(out.get("risk_level", "medium")).strip().lower()
         out["risk_level"] = raw_risk
         return out
+
+
+_NEG_TO_BULL_EXPLANATIONS = ("利空出尽", "替代", "竞争", "受益", "错杀", "让利", "成本下降", "成本再降")
+_POS_TO_BEAR_EXPLANATIONS = ("利好出尽", "透支", "兑现", "获利盘", "高分位", "sell-the-news", "priced_in", "竞争", "替代")
+
+
+def check_inference_consistency(inf: InferenceResponse | dict[str, Any]) -> list[str]:
+    """
+    校验单事件判断（impact_direction）与图谱多周期推演（t5_forecast）的一致性：
+    - 若 impact_direction == 'negative' 且 t5_forecast == 'BULLISH'，且 contagion_impact 不含
+      “利空出尽/替代/竞争/受益/错杀”等跨主体反向解释，返回一致性警告；
+    - 若 impact_direction == 'positive' 且 t5_forecast == 'BEARISH'，且既无 PRICED_IN 操作也无
+      “利好出尽/透支/兑现/获利盘”等解释，返回一致性警告。
+    """
+    if isinstance(inf, dict):
+        imp_dir = str(inf.get("impact_direction", "neutral")).lower()
+        t5_obj = inf.get("t5_forecast") or {}
+        t5_dir = str(t5_obj.get("direction", "NEUTRAL") if isinstance(t5_obj, dict) else getattr(t5_obj, "direction", "NEUTRAL")).upper()
+        c_imp = str(inf.get("contagion_impact") or "")
+        ops = inf.get("patch_ops") or []
+        has_priced_in_op = any((op.get("op") if isinstance(op, dict) else getattr(op, "op", "")) == "PRICED_IN" for op in ops)
+    else:
+        imp_dir = inf.impact_direction
+        t5_dir = inf.t5_forecast.direction
+        c_imp = str(inf.contagion_impact or "")
+        has_priced_in_op = any(op.op == "PRICED_IN" for op in inf.patch_ops)
+
+    warnings: list[str] = []
+    if imp_dir == "negative" and t5_dir == "BULLISH":
+        if not any(kw in c_imp for kw in _NEG_TO_BULL_EXPLANATIONS):
+            warnings.append(
+                f"方向一致性告警：单事件极性为 negative（利空），但 T+5 图谱推演为 BULLISH（看多），且传导说明未提供“利空出尽/国产替代/竞争受益/错杀”等反向逻辑解释（当前 contagion_impact='{c_imp or '无'}'）。"
+            )
+    elif imp_dir == "positive" and t5_dir == "BEARISH":
+        if not has_priced_in_op and not any(kw in c_imp.lower() for kw in _POS_TO_BEAR_EXPLANATIONS):
+            warnings.append(
+                f"方向一致性告警：单事件极性为 positive（利好），但 T+5 图谱推演为 BEARISH（看空），且未触发 PRICED_IN（利好出尽）算子或相关说明。"
+            )
+    return warnings

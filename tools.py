@@ -5,7 +5,15 @@ from pathlib import Path
 from typing import Any, Optional
 import networkx as nx
 import pandas as pd
-from schema import Edge, EvidenceType, L2Graph, PatchOp, StateHistoryEntry, ThesisNode
+from schema import (
+    Edge,
+    EvidenceType,
+    L2Graph,
+    PatchOp,
+    StateHistoryEntry,
+    ThesisNode,
+    check_inference_consistency,
+)
 
 logger = logging.getLogger("fin_memkg.tools")
 BASE_DIR = Path(__file__).resolve().parent
@@ -14,6 +22,63 @@ L1_INDEX_PATH = MEMORY_DIR / "L1_insight_index.md"
 L2_DIR, L4_DIR, CACHE_DIR = MEMORY_DIR / "L2_graphs", MEMORY_DIR / "L4_archive", MEMORY_DIR / "L4_archive/cache"
 SECTOR_CHAINS_PATH = L2_DIR / "sector_chains.json"
 CACHE_SERIES_VERSION = "v2_date_anchored"
+
+NEGATIVE_POLARITY_WORDS: tuple[str, ...] = (
+    "推迟", "砍单", "下调", "停产", "检修", "断供", "短缺", "缺陷", "召回",
+    "罚款", "调查", "降价", "跌破", "亏损", "预减", "减持", "关税", "管制", "限制",
+    "下滑", "暴跌", "急跌", "倒挂", "抛售", "受挫", "受阻", "受限", "拉长", "利空",
+    "削减", "顺延", "收缩", "收紧",
+)
+
+POSITIVE_POLARITY_WORDS: tuple[str, ...] = (
+    "超预期", "上修", "扩产", "中标", "大单", "突破", "量产", "提价", "涨价",
+    "满产", "预增", "回购", "获批",
+    "上调", "加单", "放量", "回暖", "提速", "高增", "暴增", "大增", "让利",
+    "超额交付", "扭转", "利好", "最低价格承诺",
+)
+
+_NEGATION_PREFIX_RE = re.compile(r"(?:未|不|没有|无|并未|未见|并非|不再|免除|取消|替代惩罚性出海|替代惩罚性|豁免)$")
+
+
+def classify_event_polarity(text: str) -> int:
+    """
+    确定性金融事件极性分类器，返回 -1（负面/利空）、0（中性/未识别）、+1（正面/利好）：
+    1. 覆盖负面词（推迟、砍单、下调、停产、检修、断供、短缺、缺陷、召回、罚款、调查、降价、跌破、亏损、预减、减持、关税、管制、限制等）；
+    2. 覆盖正面词（超预期、上修、扩产、中标、大单、突破、量产、提价、涨价、满产、预增、回购、获批等）；
+    3. 处理“未/不/没有 + 负面词”的否定结构（如“未推迟”、“没有砍单”不判为负面；“未超预期”、“未获批”判为负面）。
+    """
+    if not text or not text.strip():
+        return 0
+    cleaned = text.strip()
+    neg_score = 0
+    pos_score = 0
+
+    for kw in NEGATIVE_POLARITY_WORDS:
+        for m in re.finditer(re.escape(kw), cleaned):
+            prefix = cleaned[max(0, m.start() - 6) : m.start()]
+            if _NEGATION_PREFIX_RE.search(prefix):
+                continue
+            neg_score += 1
+
+    has_supply_disruption = any(
+        w in cleaned for w in ("停产", "检修", "断供", "短缺", "受阻", "配额收紧")
+    )
+
+    for kw in POSITIVE_POLARITY_WORDS:
+        for m in re.finditer(re.escape(kw), cleaned):
+            prefix = cleaned[max(0, m.start() - 4) : m.start()]
+            if re.search(r"(?:未|不|没有|无|并未|不及)$", prefix):
+                neg_score += 1
+                continue
+            if kw in ("涨价", "提价") and has_supply_disruption:
+                continue
+            pos_score += 1
+
+    if neg_score > pos_score:
+        return -1
+    if pos_score > neg_score:
+        return 1
+    return 0
 
 
 def _clean_symbol(stock_code: str) -> str:
@@ -104,8 +169,29 @@ def query_l4_archive(stock_code: str, pointer_id: Optional[str] = None, as_of_da
     return results
 
 
-def find_contagion_paths(event_text: str, target_stock: str, lambda_decay: float = 0.6, max_hops: int = 2) -> list[dict]:
-    """基于真实两跳三节点 NetworkX DiGraph 搜索从冲击源头节点 hit_node 到目标股 <=max_hops 跳的简单路径。"""
+def find_contagion_paths(
+    event_text: str,
+    target_stock: str,
+    lambda_decay: float = 0.6,
+    max_hops: int = 2,
+    event_polarity: int = 0,
+) -> list[dict]:
+    """
+    基于真实两跳三节点 NetworkX DiGraph 搜索从冲击源头节点 hit_node 到目标股 <=max_hops 跳的简单路径。
+
+    符号约定（严格数学传导，无事件关键词硬编码特判）：
+    1. 边的基准符号 edge_sign 定义为“正向上游冲击（+1）对下游节点的影响符号”：
+       - 默认读取边的 transmission_sign（"+1" -> +1.0, "-1" -> -1.0）；
+       - 若边在 sector_chains.json 中标注了 shock_semantics == "NEGATIVE_SHOCK"
+         （即原始边符号是按负向冲击语义编写的），则对该边乘 -1 还原为正向冲击基准符号 edge_sign。
+    2. 仅在第一跳（i == 0，即事件冲击进入源节点的首条边）应用 event_polarity：
+       - Hop 1: hop_effective_sign = edge_sign_0 * event_polarity（当 polarity_applied 为真）；
+       - Hop i (i >= 1): hop_effective_sign = edge_sign_i；
+       从而保证所有跳的逐跳 eff_σ 乘积严格等于整条路径的总符号 effective_sign = (∏ edge_sign_i) * event_polarity。
+    3. 当 event_polarity == 0 时退回 edge_sign（不乘事件极性），并在返回值标记 polarity_applied=False；
+       当 event_polarity 为 -1 或 +1 时标记 polarity_applied=True。
+    4. 路径的 transmission_sign 与 path_factor 均使用最终 effective_sign 计算。
+    """
     if max_hops <= 0:
         return []
     chain_file = SECTOR_CHAINS_PATH if SECTOR_CHAINS_PATH.exists() else (MEMORY_DIR / "sector_chains.json")
@@ -123,6 +209,9 @@ def find_contagion_paths(event_text: str, target_stock: str, lambda_decay: float
         return []
     text_low = event_text.lower()
     paths_out: list[dict] = []
+
+    polarity_norm = -1 if event_polarity < 0 else (1 if event_polarity > 0 else 0)
+    polarity_applied = polarity_norm != 0
 
     node_hits: dict[str, list[str]] = {}
     for nd in g.nodes():
@@ -142,26 +231,40 @@ def find_contagion_paths(event_text: str, target_stock: str, lambda_decay: float
             actual_hops = len(sp) - 1
             if actual_hops < 1 or actual_hops > max_hops:
                 continue
-            sigma_total, gamma_total = 1.0, 1.0
+            edge_sign_total = 1.0
+            hop_eff_product = 1.0
+            gamma_total = 1.0
             matched_kws = list(start_hits)
             rels, step_descs = [], []
+            hop_edge_signs: list[int] = []
+            hop_effective_signs: list[int] = []
             for i in range(actual_hops):
                 u_i, v_i = sp[i], sp[i + 1]
                 ed = g[u_i][v_i]
                 matched_kws.extend(kw for kw in ed.get("keywords", []) if kw.lower() in text_low)
-                s_i = 1.0 if ed.get("transmission_sign", "+1") == "+1" else -1.0
+                raw_s_i = 1.0 if ed.get("transmission_sign", "+1") == "+1" else -1.0
+                edge_sign = -raw_s_i if ed.get("shock_semantics") == "NEGATIVE_SHOCK" else raw_s_i
+                # 仅在第一跳应用 event_polarity，确保逐跳 eff_σ 乘积等于总符号
+                if i == 0 and polarity_applied:
+                    hop_effective_sign = edge_sign * polarity_norm
+                else:
+                    hop_effective_sign = edge_sign
                 g_i = float(ed.get("gamma", 0.75))
-                sigma_total *= s_i
+                edge_sign_total *= edge_sign
+                hop_eff_product *= hop_effective_sign
                 gamma_total *= g_i
+                hop_edge_signs.append(1 if edge_sign >= 0 else -1)
+                hop_effective_signs.append(1 if hop_effective_sign >= 0 else -1)
                 rels.append(ed.get("relation", "UPSTREAM_DRIVES"))
-                step_descs.append(f"Hop {i+1} ({u_i}->{v_i}, σ={ed.get('transmission_sign','+1')}, γ={g_i}): {ed.get('description','')}")
+                hop_eff_str = "+1" if hop_effective_sign >= 0 else "-1"
+                edge_str = "+1" if edge_sign >= 0 else "-1"
+                pol_note = f", event_polarity={polarity_norm:+d}" if (i == 0 and polarity_applied) else ""
+                step_descs.append(
+                    f"Hop {i+1} ({u_i}->{v_i}, edge_σ={edge_str}{pol_note}, eff_σ={hop_eff_str}, γ={g_i}): {ed.get('description','')}"
+                )
 
-            if "COST_SQUEEZE" in rels and any(k in event_text for k in ("产能扩充", "超额交付", "跌破7.3万", "跌破7万", "成本再降", "拍卖价下调", "让利")):
-                sigma_total = 1.0
-            elif "DEMAND_PROXY" in rels and any(k in event_text for k in ("收缩", "急跌", "跌破2250", "倒挂")):
-                sigma_total = -1.0
-
-            path_factor = round(sigma_total * gamma_total * (lambda_decay ** (actual_hops - 1)), 4)
+            effective_sign = hop_eff_product
+            path_factor = round(effective_sign * gamma_total * (lambda_decay ** (actual_hops - 1)), 4)
             inter_nodes = [
                 {"id": nid, "name": entities.get(nid, {}).get("name", nid)}
                 for nid in sp[1:-1]
@@ -176,7 +279,11 @@ def find_contagion_paths(event_text: str, target_stock: str, lambda_decay: float
                 "relation": rels[-1],
                 "hop": actual_hops,
                 "actual_hops": actual_hops,
-                "transmission_sign": "+1" if sigma_total >= 0 else "-1",
+                "hop_edge_signs": hop_edge_signs,
+                "hop_effective_signs": hop_effective_signs,
+                "transmission_sign": "+1" if effective_sign >= 0 else "-1",
+                "event_polarity": polarity_norm,
+                "polarity_applied": polarity_applied,
                 "gamma_total": round(gamma_total, 4),
                 "lambda_decay": lambda_decay,
                 "path_factor": path_factor,

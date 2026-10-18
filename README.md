@@ -1,6 +1,6 @@
-# Fin-MemKG 金融事件结构化分析 Demo（第一版 · 固定使用 Qwen API）
+# Fin-MemKG · Qwen 动态金融知识图谱与投资论点记忆更新工作台
 
-本项目第一版 Demo 固定使用阿里云 DashScope 提供的 **Qwen OpenAI 兼容 Chat Completions 接口**，完成金融事件的结构化分析演示。
+本项目固定使用阿里云 DashScope 提供的 **Qwen OpenAI 兼容 Chat Completions 接口**，完成面向金融事件的**单事件结构化要素抽取 + L2 多空论点状态机更新 + L3 经验分位校准 + 两跳三节点产业链传导**推演演示与同底座真实大模型评测。
 
 ## 1. 安装依赖
 
@@ -12,7 +12,7 @@ pip install -r requirements.txt
 
 ## 2. 配置 Qwen 环境变量
 
-第一版 Demo 仅读取以下三个配置项（读取顺序：**1. 系统环境变量 $\to$ 2. 项目根目录 `.env` 文件**）：
+系统仅读取以下三个配置项（读取顺序：**1. 系统环境变量 $\to$ 2. 项目根目录 `.env` 文件**）：
 
 - `QWEN_API_KEY`（必填）
 - `QWEN_BASE_URL`（可选，默认：`https://dashscope.aliyuncs.com/compatible-mode/v1`）
@@ -26,36 +26,60 @@ QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 QWEN_MODEL=qwen-plus
 ```
 
-> **注意**：当前版本不再读取或推断 `OPENAI_API_KEY`、`OPENAI_BASE_URL`、`OPENAI_MODEL`、`LLM_*`、`DEEPSEEK_*` 或 `OPENAI_WIRE_API`。
+> **注意**：当前版本不读取或推断 `OPENAI_API_KEY`、`OPENAI_BASE_URL`、`OPENAI_MODEL`、`LLM_*`、`DEEPSEEK_*` 或 `OPENAI_WIRE_API`。
 
-## 3. 启动 Demo
+## 3. 启动工作台与运行测试
 
-在项目根目录执行：
+### 启动 Streamlit 交互式工作台
 
 ```bash
 .venv/bin/streamlit run app.py
 ```
 
-页面启动后会默认加载一条项目内置的固定金融事件（启动时不会自动发起任何 API 请求）。
+页面启动后会默认加载项目内置的固定金融事件与截至基准日的 L2 图谱快照（启动时不会自动发起任何 API 请求）。
 
-## 4. 如何使用演示模式与调用 Qwen API
+### 运行全量离线单元测试
 
-页面提供两个操作按钮：
+```bash
+.venv/bin/python -m unittest discover -s tests -v
+```
 
-1. **进入演示模式（点击“使用演示结果”按钮）**：
-   - 不发起任何网络请求，无需配置 `QWEN_API_KEY`；
-   - 直接展示项目内置的固定结构化分析结果，并在页面明确标记 **`“当前为演示数据，未调用 Qwen API”`** 与结果来源 **`“演示数据，未调用 API”`**。
-2. **调用 Qwen API（点击“调用 Qwen API”按钮）**：
-   - 读取 `QWEN_API_KEY`、`QWEN_BASE_URL`、`QWEN_MODEL`；
-   - 若命中本地成功响应缓存，显示 **`“缓存结果，未发送新的 API 请求”`**；
-   - 若未命中缓存，使用 OpenAI Python SDK 的 `client.chat.completions.create(...)` 向 Qwen 发送一次请求（关闭自动重试，一次点击最多发送一次请求），成功后显示 **`“Qwen 实时 API 结果”`**。
-   - 也可在终端运行单次最小连通性验证命令：
-     ```bash
-     .venv/bin/python scripts/check_api.py
-     ```
+### 运行真实 API 连通性与三场景冒烟测试
 
-## 5. 失败处理与当前版本限制
+```bash
+# 单次最小连通性检查
+.venv/bin/python scripts/check_api.py
 
-1. **API 调用失败不会自动降级为真实分析**：当缺少 `QWEN_API_KEY` 或接口返回 HTTP 502、401、403、超时、非合法 JSON 时，页面会清除旧结果并显示简洁提示 **`“Qwen API 调用失败，未生成真实分析结果。”`**（同时列出错误类型、HTTP 状态码、当前模型名称、Base URL 主机名、是否发生过真实请求，并将详细错误收入折叠区），**绝不自动重试，也绝不使用启发式规则或演示数据冒充真实模型分析结果**。
-2. **暂不支持原有 Responses API 和其他供应商**：当前版本仅支持 Qwen OpenAI 兼容 Chat Completions 接口，不支持 Responses API、多协议分支或多供应商自动切换。
-3. **完整 Benchmark 暂时隐藏**：全量 Benchmark 评测、多方法对比、消融实验与复杂多跳图谱维护入口已从默认流程和界面中暂时隐藏（相关底层代码与数据文件保留在仓库中）。
+# 三大预设场景（A 逻辑反转 / B 利好出尽 / C 两跳传导）真实 Qwen 端到端冒烟验证
+.venv/bin/python scripts/smoke_demo.py
+```
+
+## 4. 调用参数、重试策略与一次点击实际调用次数
+
+1. **生成参数与超时上限**：
+   - `SINGLE_MAX_TOKENS = 1200`（独立单事件分析函数上限）
+   - `GRAPH_MAX_TOKENS = 2600`（统一图谱推演首次调用 `max_tokens`）
+   - `GRAPH_MAX_TOKENS_RETRY = 4096`（触发截断或 JSON 解析重试时的扩容 `max_tokens`）
+   - `LLM_TIMEOUT = 60.0`（单次请求超时时间 60 秒，`temperature = 0`）
+2. **一次点击实际调用次数**：
+   - 页面已将单事件结构化分析字段（`event_summary`、`entities`、`event_type`、`impact_direction`、`risk_level`、`event_confidence`）统一合并进 `InferenceResponse`。
+   - 点击 **“📋 使用演示结果”**：**0 次**网络请求（使用内置确定性状态转移引擎，并明确标识 `当前为演示数据，未调用 Qwen API`）。
+   - 点击 **“🚀 调用 Qwen API”**：
+     - 命中本地缓存时：**0 次**网络请求；
+     - 未命中缓存且首次输出完整时：**1 次**网络请求；
+     - 触发可重试异常时：最多 **2 次**网络请求（首次请求 + 最多 1 次重试）。
+3. **有限重试策略（截断 / 5xx / 超时可重试一次；401 / 403 / 404 不重试）**：
+   - 当首次调用遇到 **输出被截断（`finish_reason == "length"`）**、**JSON 解析/契约校验失败**、**HTTP 5xx 网关异常** 或 **请求超时** 时，系统允许自动重试 **1 次**（总请求数 $\le 2$），重试时切换至 `GRAPH_MAX_TOKENS_RETRY = 4096` 并追加紧凑 JSON 字数约束（每条 `reason/reasoning` $\le 80$ 字、`patch_ops` $\le 3$ 条、`watch_indicators` $\le 3$ 条；5xx/超时前等待 1 秒）。
+   - 当遇到 **HTTP 401（认证失败）、HTTP 403（权限拒绝）、HTTP 404（模型或地址不存在）** 或 **配置缺失** 时，**绝不重试**（`call_count = 1`），立即报错。
+
+## 5. 失败不静默降级原则
+
+- **绝不将 API 失败伪装成模型成功**：当 Qwen API 调用（含最多 1 次重试后）仍失败时，界面会立即清空上一次的成功结果（`last_res`），展示清楚的错误类型、原因与下一步提示，**绝不自动调用 `_heuristic_fallback()` 冒充真实大模型结果**。
+- **审计元数据透明可见**：每次推演在 `ExecutionMeta` 与侧边栏审计徽章中明确记录 `finish_reason`、`retry_count` 与 `json_repaired`。
+
+## 6. 规则机制自检 (`RULE_MECHANISM_SIMULATION`) vs 真实 LLM 评测 (`LIVE_LLM_BENCHMARK`)
+
+详细评测协议、0-Token 动量基线 `B0`、三分类超额收益阈值（`car_5d_pct` $\pm 1.5\%$）、多空组合 CAR 与 Bootstrap 95% CI 说明请参阅 [EVALUATION.md](EVALUATION.md)：
+
+- **规则机制自检 (`RULE_MECHANISM_SIMULATION`)**：对应 `memory/L4_archive/benchmark_results.json` 与 `eval_results.csv`（`inference_mode="HEURISTIC_FALLBACK"`），仅用于离线校验状态机算子代码逻辑，**不作为大模型知识图谱增益证据**。
+- **真实 LLM 评测 (`LIVE_LLM_BENCHMARK`)**：通过 `eval_benchmark.py` 执行，每次运行独立写入 `memory/L4_archive/runs/{run_id}/`（含 `run_manifest.json`、`records.jsonl`、`summary.json`、`summary.md`），所有 LLM 方法真实调用同一 `qwen-plus` 模型，失败计入 `failed_cases`。

@@ -137,6 +137,28 @@ def main() -> int:
         lo, hi = bootstrap_mean_ci(delta_car)
         print(f"vs {short(other):<10} wins={wins:>2} losses={losses:>2} ties={ties:>2} p={p:.3f}  dCAR={sum(delta_car)/len(delta_car):+.2f}% CI[{lo:+.2f},{hi:+.2f}]" if delta_car else f"vs {short(other):<10} wins={wins:>2} losses={losses:>2} ties={ties:>2} p={p:.3f}")
 
+    print("\n== Prompt identity (Ours vs other; identical prompt but different output = model nondeterminism) ==")
+    for other in methods:
+        if other == ours:
+            continue
+        same_prompt = same_prompt_diff_pred = diff_prompt = diff_prompt_diff_pred = 0
+        for cid in case_ids:
+            a, b = by_case[cid].get(ours), by_case[cid].get(other)
+            if not a or not b:
+                continue
+            identical = a.get("system_prompt") == b.get("system_prompt") and a.get("user_prompt") == b.get("user_prompt")
+            diff_pred = a.get("pred_dir") != b.get("pred_dir")
+            if identical:
+                same_prompt += 1
+                same_prompt_diff_pred += int(diff_pred)
+            else:
+                diff_prompt += 1
+                diff_prompt_diff_pred += int(diff_pred)
+        print(
+            f"vs {short(other):<10} identical_prompt={same_prompt:>2} (pred_diff={same_prompt_diff_pred:>2}) "
+            f"different_prompt={diff_prompt:>2} (pred_diff={diff_prompt_diff_pred:>2})"
+        )
+
     print("\n== Scenario accuracy (from summary) ==")
     for m, sc in payload.get("by_scenario", {}).items():
         print(f"{short(m):<10} " + "  ".join(f"{k}={v}" for k, v in sc.items()))

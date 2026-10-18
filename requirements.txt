@@ -7,3 +7,4 @@ streamlit>=1.32.0
 pyvis>=0.3.2
 plotly>=5.19.0
 pytest>=8.0.0
+pyarrow>=14.0.0

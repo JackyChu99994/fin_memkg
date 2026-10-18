@@ -160,3 +160,98 @@ F. 识别出三处数据可信度问题（必须处理，否则报告会出事�
   不能搬到我们报告里当自己的成绩。
 - 金融数据与新闻抓取注意来源条款；对外发布数据集前去掉不必要的个人信息。
 - 本报告严禁出现未经真实运行得到的数字（第 2 节 F 那三处就是反例）。
+
+═══════════════════════════════════════════
+6. P1 已落地：本地行情快照层（第 2 棒交付）
+═══════════════════════════════════════════
+
+新增文件：
+- market_snapshot.py
+  - build：并发下载创业板日线（新浪源，qfq 复权）并落盘 parquet
+  - sectors：给股票池补新浪行业字段
+  - load_bars / load_panel / load_universe / load_index：统一读取，
+    严格按 date <= as_of_date 切片，杜绝前视偏差
+- scripts/validate_task01.py：task_01 端到端验收脚本
+- .gitignore 增加 data/market/（生成数据不入库）
+- requirements.txt 增加 pyarrow>=14.0.0
+
+生成数据（不入库，需各组员自行 build）：
+  data/market/bars.parquet、universe.parquet、index.parquet、meta.json
+
+实测基准（2026-10-18）：
+- 新浪指数 399006：0.21 秒，3,975 根日线，覆盖 2010-06 至今
+- 小规模构建：40 只 / 9.3 秒 / 26,901 行 / 零失败（已验证落盘与切片）
+- 8 并发下载 24 只：4.5 秒，零失败；理论 1411 只约 4–6 分钟
+- **全量实测失败**：跑到 1400/1411 时累计 43 只失败（新浪限流），
+  且最后若干请求无响应导致进程挂住 18 分钟未落盘。
+  → 第 3 棒必须先补两点再跑全量：
+    1. 给每只股票的请求加独立超时（akshare 的 stock_zh_a_daily 不暴露 timeout，
+       需用信号/线程池 future.result(timeout=) 或换 requests 直连新浪）；
+    2. 每下完 N 只就增量落盘（断点续传），不要等全部完成才写。
+  本次已停止该任务；data/market/ 里保留的是 40 只的验证快照。
+- 东方财富仍不可用（代理 ProxyError / 绕过则断连），不要再用
+
+⚠ 两个新发现的坑（写报告时必须知道）：
+1. **官方 automated_checks 很弱**。以 task_01 为例，它只检查：
+   文件是否存在、代码是否为 3 开头 6 位、行数是否 ≤10，
+   以及 transcript 里有没有出现 "kline/ohlcv"、"macd"、"rsi"、"ma5/均线" 这些关键词。
+   **它完全不校验选股结果正确不正确。**
+   而 hybrid 的另一半 LLM 评审维度又是空数组。
+   → 如果只看官方分数，会得出"系统很好"的假象。第 6 棒必须自己加正确性指标：
+     与 reference_ans 重合度、或独立重算指标复核，否则报告不可信。
+2. **task_36_intraday_anomaly 需要 30 分钟 K 线**，日线快照覆盖不了。
+   34/40 题明确要求创业板，日线快照可支撑大部分任务；
+   这 1 题需要另找分钟级数据源（新浪/腾讯分钟线需单独验证，东财分钟线不可用）。
+
+═══════════════════════════════════════════
+7. 第 4 棒（GA 内核移植）的准确规格
+═══════════════════════════════════════════
+不要凭印象重写，按老师源码对齐（本地 D:/cs336/GenericAgent）：
+- 入口：agent_runner_loop(client, system_prompt, user_input, handler, tools_schema, max_turns=40)
+- 每轮：client.chat(messages, tools=tools_schema) → 解析 tool_calls →
+  handler.dispatch(tool_name, args)（对应 do_<tool_name> 方法）→
+  汇总 tool_results → turn_end_callback 生成 next_prompt → 下一轮
+- 历史不塞回 messages，由 Session 持有（llmcore.py），每轮只追加一条 user 消息
+- 退出条件：should_exit / 无 next_prompt / 达到 max_turns
+- 工具结果结构：{"tool_use_id": id, "content": str}
+- 每 10 轮清一次 client.last_tools
+- 9 个工具定义见 assets/tools_schema.json（已下载到本地）
+- Python 用 3.11/3.12；现有 3.13.9 的 .venv 不要复用来跑 GA 内核
+
+═══════════════════════════════════════════
+8. GA 核心框架已落地（第 2 棒交付，可直接跑）
+═══════════════════════════════════════════
+
+新增 ga_core/ 包（与既有 agent_loop.py 领域管线互不影响）：
+- session.py   消息结构，标准 OpenAI function-calling 格式
+- llm.py       Qwen / OpenAI 兼容客户端 + FakeClient（测试用）
+- loop.py      通用循环 AgentLoop：调模型 → 执行工具 → 回灌结果 → 直到无工具调用
+- tools.py     9 个原子工具：code_run、file_read、file_write、file_patch、
+               web_scan、web_execute_js、ask_user、
+               update_working_checkpoint、start_long_term_update
+- handler.py   工具调度（未知工具/异常都会回灌给模型，不静默吞掉）
+- memory.py    L0–L4 读取 + 系统提示拼装 + crystallize_skill（写 L3）
+- cli.py       命令行入口
+
+验证（2026-10-18）：
+- pytest 23 项全过（原 11 项 + 新增 12 项）
+- 无 API Key 也能自检：
+    python -m ga_core.cli "自检" --fake --max-turns 5
+  实际执行了 file_write → file_read → 输出最终答复，三轮结束。
+
+已知边界（第 4 棒继续补）：
+- web_execute_js 目前是扩展点，未接真实浏览器（老师用 TMWebDriver）；
+  web_scan 只是静态 HTTP 读取，没有登录态。
+- 未接入工具的并行调用与流式输出。
+- start_long_term_update 只返回提纯指令，真正写记忆由模型用 file_read/file_patch 完成
+  （与老师设计一致）。
+- .cursorrules 写"总代码 <1000 行"，实际项目已 3,874 行；新框架又增加约 600 行。
+  这条规则建议更新，否则与实际长期不符。
+
+运行方式：
+    ./.venv/Scripts/python.exe -m ga_core.cli "分析某只股票" --max-turns 20
+    ./.venv/Scripts/python.exe -m ga_core.cli "自检" --fake
+  系统提示会自动加载 memory/L0_meta_rules.md 与 L1 索引；
+  L2 图谱、L3 技能、L4 归档由模型按需 file_read。
+
+

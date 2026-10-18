@@ -12,3 +12,9 @@ __pycache__/
 
 # Local backup snapshots
 .backups/
+
+# Generated market snapshot
+data/market/
+
+# Agent sandbox
+workspace/

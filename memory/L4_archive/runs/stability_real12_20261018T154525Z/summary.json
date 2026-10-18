@@ -1,0 +1,333 @@
+{
+  "run_id": "stability_real12_20261018T154525Z",
+  "timestamp": "2026-10-18T16:22:46.289261+00:00",
+  "evaluation_mode": "LIVE_LLM_STABILITY_CHECK",
+  "methods": [
+    "B1: Long-History Context + LLM (Full-Text)",
+    "B2: Lexical Top-K Retrieval + LLM (Char-Bigram Top-3)"
+  ],
+  "repeats": 3,
+  "summary": {
+    "B1: Long-History Context + LLM (Full-Text)": {
+      "repeats": 3,
+      "valid_cases": 12,
+      "repeat_acc_pct": [
+        66.7,
+        58.3,
+        58.3
+      ],
+      "repeat_acc_mean_pct": 61.1,
+      "repeat_acc_std_pct": 4.0,
+      "majority_acc_pct": 58.3,
+      "failed_calls": 0,
+      "live_calls": 36,
+      "avg_tokens": 2327.6
+    },
+    "B2: Lexical Top-K Retrieval + LLM (Char-Bigram Top-3)": {
+      "repeats": 3,
+      "valid_cases": 12,
+      "repeat_acc_pct": [
+        58.3,
+        66.7,
+        58.3
+      ],
+      "repeat_acc_mean_pct": 61.1,
+      "repeat_acc_std_pct": 4.0,
+      "majority_acc_pct": 58.3,
+      "failed_calls": 0,
+      "live_calls": 36,
+      "avg_tokens": 2313.9
+    }
+  },
+  "paired": {},
+  "per_case": {
+    "REAL_01": {
+      "B1: Long-History Context + LLM (Full-Text)": {
+        "votes": [
+          "NEUTRAL",
+          "NEUTRAL",
+          "NEUTRAL"
+        ],
+        "majority": "NEUTRAL",
+        "gt": "BEARISH",
+        "majority_correct": false,
+        "mean_strategy_car_pct": 0.0
+      },
+      "B2: Lexical Top-K Retrieval + LLM (Char-Bigram Top-3)": {
+        "votes": [
+          "NEUTRAL",
+          "NEUTRAL",
+          "NEUTRAL"
+        ],
+        "majority": "NEUTRAL",
+        "gt": "BEARISH",
+        "majority_correct": false,
+        "mean_strategy_car_pct": 0.0
+      }
+    },
+    "REAL_02": {
+      "B1: Long-History Context + LLM (Full-Text)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BEARISH",
+        "majority_correct": false,
+        "mean_strategy_car_pct": -6.93
+      },
+      "B2: Lexical Top-K Retrieval + LLM (Char-Bigram Top-3)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BEARISH",
+        "majority_correct": false,
+        "mean_strategy_car_pct": -6.93
+      }
+    },
+    "REAL_03": {
+      "B1: Long-History Context + LLM (Full-Text)": {
+        "votes": [
+          "NEUTRAL",
+          "NEUTRAL",
+          "NEUTRAL"
+        ],
+        "majority": "NEUTRAL",
+        "gt": "BEARISH",
+        "majority_correct": false,
+        "mean_strategy_car_pct": 0.0
+      },
+      "B2: Lexical Top-K Retrieval + LLM (Char-Bigram Top-3)": {
+        "votes": [
+          "NEUTRAL",
+          "NEUTRAL",
+          "NEUTRAL"
+        ],
+        "majority": "NEUTRAL",
+        "gt": "BEARISH",
+        "majority_correct": false,
+        "mean_strategy_car_pct": 0.0
+      }
+    },
+    "REAL_04": {
+      "B1: Long-History Context + LLM (Full-Text)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BEARISH",
+        "majority_correct": false,
+        "mean_strategy_car_pct": -6.05
+      },
+      "B2: Lexical Top-K Retrieval + LLM (Char-Bigram Top-3)": {
+        "votes": [
+          "BULLISH",
+          "NEUTRAL",
+          "NEUTRAL"
+        ],
+        "majority": "NEUTRAL",
+        "gt": "BEARISH",
+        "majority_correct": false,
+        "mean_strategy_car_pct": -2.02
+      }
+    },
+    "REAL_05": {
+      "B1: Long-History Context + LLM (Full-Text)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 7.53
+      },
+      "B2: Lexical Top-K Retrieval + LLM (Char-Bigram Top-3)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 7.53
+      }
+    },
+    "REAL_06": {
+      "B1: Long-History Context + LLM (Full-Text)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 10.35
+      },
+      "B2: Lexical Top-K Retrieval + LLM (Char-Bigram Top-3)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 10.35
+      }
+    },
+    "REAL_07": {
+      "B1: Long-History Context + LLM (Full-Text)": {
+        "votes": [
+          "BEARISH",
+          "BEARISH",
+          "BEARISH"
+        ],
+        "majority": "BEARISH",
+        "gt": "BEARISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 3.5
+      },
+      "B2: Lexical Top-K Retrieval + LLM (Char-Bigram Top-3)": {
+        "votes": [
+          "BEARISH",
+          "BEARISH",
+          "BEARISH"
+        ],
+        "majority": "BEARISH",
+        "gt": "BEARISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 3.5
+      }
+    },
+    "REAL_08": {
+      "B1: Long-History Context + LLM (Full-Text)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 2.43
+      },
+      "B2: Lexical Top-K Retrieval + LLM (Char-Bigram Top-3)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 2.43
+      }
+    },
+    "REAL_09": {
+      "B1: Long-History Context + LLM (Full-Text)": {
+        "votes": [
+          "BEARISH",
+          "BULLISH",
+          "NEUTRAL"
+        ],
+        "majority": "NEUTRAL",
+        "gt": "BEARISH",
+        "majority_correct": false,
+        "mean_strategy_car_pct": 0.0
+      },
+      "B2: Lexical Top-K Retrieval + LLM (Char-Bigram Top-3)": {
+        "votes": [
+          "BULLISH",
+          "BEARISH",
+          "NEUTRAL"
+        ],
+        "majority": "NEUTRAL",
+        "gt": "BEARISH",
+        "majority_correct": false,
+        "mean_strategy_car_pct": 0.0
+      }
+    },
+    "REAL_10": {
+      "B1: Long-History Context + LLM (Full-Text)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 8.95
+      },
+      "B2: Lexical Top-K Retrieval + LLM (Char-Bigram Top-3)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 8.95
+      }
+    },
+    "REAL_11": {
+      "B1: Long-History Context + LLM (Full-Text)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 7.75
+      },
+      "B2: Lexical Top-K Retrieval + LLM (Char-Bigram Top-3)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 7.75
+      }
+    },
+    "REAL_12": {
+      "B1: Long-History Context + LLM (Full-Text)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 9.6
+      },
+      "B2: Lexical Top-K Retrieval + LLM (Char-Bigram Top-3)": {
+        "votes": [
+          "BULLISH",
+          "BULLISH",
+          "BULLISH"
+        ],
+        "majority": "BULLISH",
+        "gt": "BULLISH",
+        "majority_correct": true,
+        "mean_strategy_car_pct": 9.6
+      }
+    }
+  }
+}

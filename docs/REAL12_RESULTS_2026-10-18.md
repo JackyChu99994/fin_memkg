@@ -6,7 +6,7 @@
 > 调用：108 条记录 = 96 次 LIVE_API_CALL + 12 条 0-Token B0；**0 失败、0 截断、0 HEURISTIC_FALLBACK**
 > 归档：`memory/L4_archive/runs/run_real12_20261018T144942Z/`
 
-> **先看结论：Ours 明显优于文本基线 B1/B2；但与 Node-Only C1 的差异在 3 次重复后消失（majority 均为 83.3%，12/12 平），单次 91.7% vs 83.3% 是采样噪声。2 跳边在当前 12 例上既不能证明有益，也不能证明有害。N=12，不宣称统计显著。**
+> **先看结论：3 次重复下 Ours 均值 88.9%±4.0、majority 83.3%，B1/B2 均值 61.1%±4.0、majority 58.3%；Ours 对 B1/B2 均为 3 胜 0 负 9 平——结构化论点记忆的增益是稳定的。但 Ours 对 C1 Node-Only 是 0 胜 0 负 12 平，单次 C1 91.7% 是采样噪声，2 跳边尚未验证出增益。N=12，不宣称统计显著。**
 
 ## 1. 主结果
 
@@ -85,19 +85,25 @@
 
 > 在 RealFin-12 上，2 跳边没有改变任何预测；Full 2-Hop 与 Node-Only 的差异是单次采样噪声。要判断边是否有用，必须做 **多次重复 + 多数投票/均值**，而不是一次运行。
 
-### 3.2 3 次重复稳定性检查（`stability_real12_20261018T152511Z`）
+### 3.2 3 次重复稳定性检查
 
-对 Ours 与 C1 各跑 3 次（2 × 12 × 3 = 72 次真实调用，0 失败）：
+两组独立 3 次重复（每组 2 × 12 × 3 = 72 次真实调用，0 失败）：
+
+- Ours / C1：`stability_real12_20261018T152511Z`
+- B1 / B2：`stability_real12_20261018T154525Z`
 
 | 方法 | 三次准确率 | 均值 ± 标准差 | 多数投票准确率 | 平均 Tokens |
 |---|---|---|---:|---:|
 | Ours | 91.7% / 83.3% / 91.7% | **88.9% ± 4.0** | **83.3%** | 3,642 |
 | C1 Node-Only | 83.3% / 83.3% / 91.7% | **86.1% ± 4.0** | **83.3%** | 3,433 |
+| B1 全文本 | 66.7% / 58.3% / 58.3% | **61.1% ± 4.0** | **58.3%** | 2,328 |
+| B2 Top-3 | 58.3% / 66.7% / 58.3% | **61.1% ± 4.0** | **58.3%** | 2,314 |
 
-- Ours vs C1 的 majority 对比：**0 胜 / 0 负 / 12 平**。
-- 两个方法的 majority 错误都集中在 REAL_02（三季报预增）和 REAL_09（国庆动销），与单次全量运行一致。
-- **结论：Full 2-Hop 与 Node-Only 在 12 例上没有可测差异；单次 C1 91.7% 是运气，不是边有害。**
-- Ours 的均值 88.9% 略高于 C1 的 86.1%，差异在 ±4.0 的波动范围内，不能当增益。
+- **Ours vs B1/B2**：majority 对比都是 **3 胜 / 0 负 / 9 平**；均值高 **27.8 个百分点**（88.9 vs 61.1），majority 高 **25.0 个百分点**（83.3 vs 58.3）。文本基线增益在 3 次重复下稳定。
+- **Ours vs C1**：majority 对比 **0 胜 / 0 负 / 12 平**；均值 88.9±4.0 vs 86.1±4.0，差异在波动范围内。**2 跳边没有可测增益。**
+- 两个方法的 majority 错误都集中在 REAL_02（三季报预增）和 REAL_09（国庆动销）。
+- **结论：结构化论点记忆 + L3 Priced-in 相对文本基线有稳定增益；2 跳边尚未验证出增益。**
+- 注意：两组是独立 3-run block（不是同一 session 内四方法交错），但模型、温度、数据、prompt 协议一致；这仍是描述性证据，不是统计显著。
 
 ## 4. 逐例观察
 
@@ -111,7 +117,7 @@
 | REAL_06 新易盛预增 | BULLISH | +10.35% | BULLISH | 全部 LLM 方法正确 |
 | REAL_07 茅台批价急跌 | BEARISH | -3.50% | BEARISH | 正确；B0/Abl-A 错 |
 | REAL_08 茅台半年报+分红 | BULLISH | +2.43% | BULLISH | 正确 |
-| REAL_09 国庆动销符合预期 | BEARISH | -5.50% | **单次 NEUTRAL** | 单次 Ours NEUTRAL / C1 BEARISH；重复 3 次 Ours 2/3 BEARISH、C1 3/3 NEUTRAL → **模型不稳定，不是边因果** |
+| REAL_09 国庆动销符合预期 | BEARISH | -5.50% | **单次 NEUTRAL** | 单次 Ours NEUTRAL / C1 BEARISH；多次重复在 BEARISH/NEUTRAL 之间波动（Ours 一次 3-run 为 NEUTRAL/NEUTRAL/BEARISH，C1 为 NEUTRAL/NEUTRAL/NEUTRAL）→ **模型不稳定，不是边因果** |
 | REAL_10 比亚迪 DM5.0 | BULLISH | +8.95% | BULLISH | 正确 |
 | REAL_11 锂矿放量+比亚迪销量 | BULLISH | +7.75% | BULLISH | 正确 |
 | REAL_12 天神之眼 | BULLISH | +9.60% | BULLISH | 正确 |
@@ -120,14 +126,15 @@
 
 1. **N=12，且只有 4 只股票**，置信区间很宽；不宣称统计显著。
 2. **B1 不是长上下文压力测试**：real12 每个 case 只有 3 条 `prior_chunks`，B1 与 B2 看到的文档几乎相同；如果要回答老师“大量信息”的质疑，需要另做 20–50 条干扰文档的 B1-Long 压力集。
-3. **单模型、单温度、单次运行**：`qwen-plus`, `temperature=0`，未做多模型/多种子；REAL_09 与 3 次稳定性检查都证明单次运行不可靠。
+3. **主表是单次运行，稳定性表是 3 次**：`qwen-plus`, `temperature=0`，未做多模型/多种子；REAL_09 与两组 3 次稳定性检查都证明单次运行不可靠。
 4. **C1 与 Ours 的差异不能当因果结论**：prompt 相同 7/12，有路径的 5/12 预测完全相同；3 次重复后 majority 均为 83.3%、12/12 平。**不能写“边有害”，也不能写“边有益”；当前只能写“未被验证”。**
 5. **PRICED_IN_TRAP 仍然是弱项**：单次 Ours 1/3；3 次重复后 majority 错误仍集中在 REAL_02/09。这是下一步最该补的场景。
+6. **B1/B2 的 3 次重复是独立 block**：与 Ours/C1 不是同一 session 交错运行；模型、温度、数据、prompt 协议一致，但仍属描述性证据。
 
 ## 6. 对期中/期末的讲法
 
-- 可以讲：“结构化论点记忆 + L3 Priced-in 相对文本基线有描述性增益：83.3% vs 66.7%/58.3%，CAR +6.65% vs +3.55%/+3.60%。”
-- 必须同时讲：“3 次重复后 Ours 均值 88.9%±4.0，C1 86.1%±4.0，majority 都是 83.3%，12/12 平；单次 91.7% vs 83.3% 是采样噪声。当前 2 跳边既不能证明有益，也不能证明有害。”
+- 可以讲：“3 次重复下 Ours 均值 88.9%±4.0、majority 83.3%；B1/B2 均值 61.1%±4.0、majority 58.3%；Ours 对 B1/B2 均为 3 胜 0 负 9 平。结构化论点记忆 + L3 Priced-in 的增益是稳定的。”
+- 必须同时讲：“Ours 对 C1 Node-Only 是 0 胜 0 负 12 平，单次 C1 91.7% 是采样噪声；当前 2 跳边尚未验证出增益。”
 - 不要把 2 跳边说成“已验证的增益”；也不要把单次 C1 高分说成“边有害”。
 - 下一步：REAL_02/09 的 PRICED_IN 分析、扩大重复次数、边触发条件/边质量、B1-Long 压力集、更多事件与多模型。
 
@@ -136,6 +143,12 @@
 ```bash
 .venv/bin/python -m eval_benchmark --dataset real12 --limit 0 --no-cache
 .venv/bin/python scripts/analyze_run.py memory/L4_archive/runs/run_real12_20261018T144942Z
+
+# 3 次重复稳定性检查
+.venv/bin/python scripts/stability_eval.py --repeats 3
+.venv/bin/python scripts/stability_eval.py --repeats 3 \
+  --methods "B1: Long-History Context + LLM (Full-Text)" \
+            "B2: Lexical Top-K Retrieval + LLM (Char-Bigram Top-3)"
 ```
 
 原始记录：`memory/L4_archive/runs/run_real12_20261018T144942Z/records.jsonl`

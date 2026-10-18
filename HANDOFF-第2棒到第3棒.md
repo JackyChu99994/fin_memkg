@@ -35,7 +35,9 @@ Fin-MemKG × GenericAgent 复刻 · 交接文档（第 2 棒 → 第 3 棒）
   本地行情快照层。详见第 4 节。
 
 第 4 棒 · 待开始
-  GA 内核移植：约百行通用循环 + 9 原子工具 + LLM function calling。
+  原计划是移植 GA 内核；**第 2 棒已提前完成核心框架**（ga_core/，23 项测试通过）。
+  第 4 棒现在负责：真实模型联调（Qwen function calling）、流式输出、
+  并行工具调用、真实浏览器桥（TMWebDriver）接入。
 
 第 5 棒 · 待开始
   KG 作为记忆层接入 + 自我进化（任务完成后把执行路径固化成 Skill 写入 L3）。

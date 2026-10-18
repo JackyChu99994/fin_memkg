@@ -5,6 +5,32 @@ Fin-MemKG × GenericAgent 复刻 · 交接文档（第 2 棒 → 第 3 棒）
 官方评测仓库：https://github.com/JinyiHan99/GA-Technical-Report
 
 ═══════════════════════════════════════════
+0. 先读这里：交接已验证，但有两个前提
+═══════════════════════════════════════════
+
+【前提 1】在 PR #1 合并前，**请从 jckinpku/fin_memkg 拉代码，不要从上游 JackyChu99994 拉**。
+  上游目前仍只有第 1 棒的 1 个提交；今天的全部成果在 fork 上。
+  PR：https://github.com/JackyChu99994/fin_memkg/pull/1 （4 个提交，MERGEABLE/CLEAN）
+
+【前提 2】github.com 线路不稳。实测干净克隆连续失败 3 次
+  （Connection reset / Could not connect），第 4 次成功。失败就重试，不是仓库问题。
+
+【已做的交付验证（2026-10-18）】
+  在全新目录里从 fork 克隆 → 新建 .venv → 清华镜像装依赖 → 实测：
+  - pytest：23 passed
+  - python -m ga_core.cli "自检" --fake：DONE，3 轮
+  - market_snapshot.fetch_universe()：1411 只
+  - data/market/ 不存在（已 gitignore），需自行构建
+
+【第 3 棒开工三条命令】
+  git clone https://github.com/jckinpku/fin_memkg.git
+  cd fin_memkg && python -m venv .venv
+  ./.venv/Scripts/python.exe -m pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+  ./.venv/Scripts/python.exe -m pytest -q
+  PYTHONUTF8=1 ./.venv/Scripts/python.exe market_snapshot.py build --start 2024-01-01 --workers 6
+  （数据构建约 30 分钟，支持断点续传；中断后重跑即可）
+
+═══════════════════════════════════════════
 0. 一句话背景
 ═══════════════════════════════════════════
 课程选题五（股票量化情报）已确定**按老师项目 GenericAgent 复刻**。

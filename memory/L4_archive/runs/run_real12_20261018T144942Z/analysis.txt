@@ -41,6 +41,16 @@ vs Abl-B      wins= 1 losses= 1 ties=10 p=1.000  dCAR=+0.62% CI[-0.92,+2.24]
 vs Abl-C1     wins= 0 losses= 1 ties=11 p=1.000  dCAR=-0.46% CI[-1.38,+0.00]
 vs Abl-C2     wins= 0 losses= 0 ties=12 p=1.000  dCAR=+0.00% CI[+0.00,+0.00]
 
+== Prompt identity (Ours vs other; identical prompt but different output = model nondeterminism) ==
+vs B0         identical_prompt= 0 (pred_diff= 0) different_prompt=12 (pred_diff= 8)
+vs B1         identical_prompt= 0 (pred_diff= 0) different_prompt=12 (pred_diff= 5)
+vs B2         identical_prompt= 0 (pred_diff= 0) different_prompt=12 (pred_diff= 4)
+vs B2+Prior   identical_prompt= 0 (pred_diff= 0) different_prompt=12 (pred_diff= 4)
+vs Abl-A      identical_prompt= 0 (pred_diff= 0) different_prompt=12 (pred_diff= 1)
+vs Abl-B      identical_prompt= 0 (pred_diff= 0) different_prompt=12 (pred_diff= 3)
+vs Abl-C1     identical_prompt= 7 (pred_diff= 1) different_prompt= 5 (pred_diff= 0)
+vs Abl-C2     identical_prompt= 8 (pred_diff= 0) different_prompt= 4 (pred_diff= 0)
+
 == Scenario accuracy (from summary) ==
 B0         TEMPORAL_REVERSAL=50.0  PRICED_IN_TRAP=0.0  SECTOR_CONTAGION=33.3
 B1         TEMPORAL_REVERSAL=66.7  PRICED_IN_TRAP=33.3  SECTOR_CONTAGION=100.0

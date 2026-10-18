@@ -109,3 +109,13 @@ QWEN_MODEL=qwen-plus
 | `market_snapshot.py` | 本地行情快照构建与读取（`data/market/` 已 gitignore） |
 | `memory/L0..L4` | 元规则、索引、L2 图谱、L3 技能、L4 证据 |
 | `tests/` | `unittest` + `pytest` 两套回归 |
+
+## 8. 最新真实评测（2026-10-18，RealFin-12）
+
+- 运行：`run_real12_20261018T144942Z`，108 条记录（96 次真实 API + 12 条 0-Token B0），**0 失败 / 0 截断 / 0 规则冒充**。
+- T+5 方向准确率：**Ours 83.3%**，B1 66.7%，B2 58.3%，B0 33.3%。
+- Long-Short CAR：**Ours +6.65%**，B1 +3.55%，B2 +3.60%，B0 +0.45%。
+- **必须同时报告的负面结果**：`Ablation C1 (Node-Only)` 为 **91.7%**，高于 Full 2-Hop 的 83.3%；`Ablation C2 (1-Hop)` 与 Ours 完全相同。当前 12 例上，**2 跳边没有证明增益**。
+- 逐例 / 配对 McNemar / 失败分析：[docs/REAL12_RESULTS_2026-10-18.md](docs/REAL12_RESULTS_2026-10-18.md)
+
+> 口径提醒：N=12、4 只股票、单模型单温度；不宣称统计显著。B1 在 `real12` 上每例只有 3 条历史文本，不是真正的长上下文压力测试；要回答“大量信息”问题，需另做 20–50 条干扰文档的 B1-Long 压力集。

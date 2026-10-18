@@ -68,5 +68,20 @@
 .venv/bin/python -m eval_benchmark --dataset real12 --limit 2 --no-cache
 
 # Step c: 不重跑 API，基于已有 records.jsonl 重新生成 summary.json 与 summary.md
-.venv/bin/python -m eval_benchmark --recompute-run run_real12_20261018T140931Z
+.venv/bin/python -m eval_benchmark --recompute-run run_real12_20261018T144942Z
+
+# Step d: 全量 12 例真实评测（约 108 条记录 / 96 次 API 调用）
+.venv/bin/python -m eval_benchmark --dataset real12 --limit 0 --no-cache
+
+# Step e: 按 case 与 paired 对比分析
+.venv/bin/python scripts/analyze_run.py memory/L4_archive/runs/<run_id>
 ```
+
+## 5. 最新一次真实评测（2026-10-18）
+
+- `run_id`: `run_real12_20261018T144942Z`
+- 108 条记录：96 次 `LIVE_API_CALL` + 12 条 `DETERMINISTIC_BASELINE`；**0 失败、0 截断、0 `HEURISTIC_FALLBACK`**
+- 主结果：Ours **83.3%**，B1 **66.7%**，B2 **58.3%**，B0 **33.3%**；Long-Short CAR 分别 **+6.65% / +3.55% / +3.60% / +0.45%**
+- **关键负面结果**：`Ablation C1 (Node-Only)` 为 **91.7%**，高于 Ours 的 83.3%；`Ablation C2 (1-Hop)` 与 Ours 完全一致。**当前 2 跳边在 RealFin-12 上没有证明增益，不能声称“图结构全面优于 Node-Only”。**
+- 逐例、配对 McNemar、失败案例分析见：[docs/REAL12_RESULTS_2026-10-18.md](docs/REAL12_RESULTS_2026-10-18.md)
+

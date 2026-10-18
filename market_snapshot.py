@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import socket
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime
@@ -63,7 +64,7 @@ def fetch_universe(board: str = "创业板") -> pd.DataFrame:
     return df.reset_index(drop=True)
 
 
-def _fetch_one(code: str, start: str, end: str, retries: int = 2) -> pd.DataFrame:
+def _fetch_one(code: str, start: str, end: str, retries: int = 3) -> pd.DataFrame:
     import akshare as ak
 
     last_error: Exception | None = None
@@ -107,35 +108,69 @@ def fetch_index(start: str = "2024-01-01", end: str | None = None, symbol: str =
 def build_snapshot(
     start: str = "2024-01-01",
     end: str | None = None,
-    workers: int = 8,
+    workers: int = 6,
     board: str = "创业板",
     limit: int | None = None,
     out_dir: Path = DATA_DIR,
+    per_symbol_timeout: float = 15.0,
+    resume: bool = True,
 ) -> dict:
-    """构建本地快照。返回 meta 摘要，便于上层与报告引用。"""
+    """构建本地快照。
+
+    akshare 的新浪接口内部 requests 没有 timeout，长时间批量抓取会永久挂住；
+    这里用 socket 默认超时兜底，并把每只股票单独落盘，支持断点续传。
+    """
     end = end or date.today().isoformat()
     out_dir.mkdir(parents=True, exist_ok=True)
+    parts_dir = out_dir / "parts"
+    parts_dir.mkdir(exist_ok=True)
     started = time.perf_counter()
+    old_timeout = socket.getdefaulttimeout()
+    socket.setdefaulttimeout(per_symbol_timeout)
 
     universe = fetch_universe(board=board)
     codes = universe["code"].tolist()
     if limit:
         codes = codes[:limit]
 
-    frames: list[pd.DataFrame] = []
+    pending: list[str] = []
+    for code in codes:
+        part = parts_dir / f"{code}.parquet"
+        if resume and part.exists():
+            try:
+                if not pd.read_parquet(part).empty:
+                    continue
+            except Exception:  # noqa: BLE001 - 损坏的分片重下
+                pass
+        pending.append(code)
+
     failures: list[dict] = []
     done = 0
-    with ThreadPoolExecutor(max_workers=workers) as pool:
-        futures = {pool.submit(_fetch_one, c, start, end): c for c in codes}
-        for future in as_completed(futures):
-            code = futures[future]
-            done += 1
-            try:
-                frames.append(future.result())
-            except Exception as exc:  # noqa: BLE001
-                failures.append({"code": code, "error": str(exc)[:200]})
-            if done % 200 == 0:
-                print(f"  {done}/{len(codes)} downloaded, failures={len(failures)}", flush=True)
+    try:
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = {pool.submit(_fetch_one, code, start, end): code for code in pending}
+            for future in as_completed(futures):
+                code = futures[future]
+                done += 1
+                try:
+                    frame = future.result()
+                    frame.to_parquet(parts_dir / f"{code}.parquet", index=False)
+                except Exception as exc:  # noqa: BLE001
+                    failures.append({"code": code, "error": str(exc)[:200]})
+                if done % 100 == 0 or done == len(pending):
+                    print(f"  {done}/{len(pending)} downloaded, failures={len(failures)}", flush=True)
+    finally:
+        socket.setdefaulttimeout(old_timeout)
+
+    parts = sorted(parts_dir.glob("*.parquet"))
+    frames = []
+    for part in parts:
+        try:
+            frame = pd.read_parquet(part)
+            if not frame.empty:
+                frames.append(frame)
+        except Exception as exc:  # noqa: BLE001
+            failures.append({"code": part.stem, "error": f"read part: {exc}"[:200]})
 
     if not frames:
         raise RuntimeError(f"no bars downloaded; first failures: {failures[:3]}")
@@ -157,8 +192,12 @@ def build_snapshot(
         "start": start,
         "end": end,
         "requested_codes": len(codes),
+        "resumed_codes": len(codes) - len(pending),
+        "pending_this_run": len(pending),
         "downloaded_codes": len(frames),
         "failed_codes": len(failures),
+        "per_symbol_timeout": per_symbol_timeout,
+        "parts_dir": str(parts_dir),
         "failures_sample": failures[:10],
         "bar_rows": len(bars),
         "date_min": str(bars["date"].min()),
@@ -260,14 +299,24 @@ def main() -> None:
     build = sub.add_parser("build", help="下载并落盘")
     build.add_argument("--start", default="2024-01-01")
     build.add_argument("--end", default=None)
-    build.add_argument("--workers", type=int, default=8)
+    build.add_argument("--workers", type=int, default=6)
+    build.add_argument("--timeout", type=float, default=15.0, help="单只股票 socket 超时（秒）")
+    build.add_argument("--no-resume", action="store_true", help="忽略已有分片，全部重下")
     build.add_argument("--board", default="创业板")
     build.add_argument("--limit", type=int, default=None)
     sub.add_parser("sectors", help="给股票池补充新浪行业字段")
     args = parser.parse_args()
 
     if args.cmd == "build":
-        meta = build_snapshot(start=args.start, end=args.end, workers=args.workers, board=args.board, limit=args.limit)
+        meta = build_snapshot(
+            start=args.start,
+            end=args.end,
+            workers=args.workers,
+            board=args.board,
+            limit=args.limit,
+            per_symbol_timeout=args.timeout,
+            resume=not args.no_resume,
+        )
         print(json.dumps(meta, ensure_ascii=False, indent=2))
     elif args.cmd == "sectors":
         print(json.dumps(enrich_universe_with_sectors(), ensure_ascii=False, indent=2))

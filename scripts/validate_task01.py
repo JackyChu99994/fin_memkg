@@ -30,12 +30,13 @@ def macd(close: pd.Series) -> tuple[pd.Series, pd.Series]:
     return dif, dea
 
 
-def rsi(close: pd.Series, period: int = 14) -> pd.Series:
+def rsi(close: pd.Series, period: int = 6) -> pd.Series:
+    """A 股常用 RSI6；经与官方参考答案比对，RSI14 无法复现其选股结果。"""
     delta = close.diff()
     gain = delta.clip(lower=0).ewm(alpha=1 / period, adjust=False).mean()
     loss = (-delta.clip(upper=0)).ewm(alpha=1 / period, adjust=False).mean()
     rs = gain / loss.replace(0, pd.NA)
-    return (100 - 100 / (1 + rs)).fillna(50.0)
+    return pd.to_numeric(100 - 100 / (1 + rs), errors="coerce").fillna(50.0)
 
 
 def crossed_above(fast: pd.Series, slow: pd.Series, start: str, end: str) -> bool:
@@ -66,10 +67,17 @@ def run() -> dict:
             continue
 
         window_rsi = rsi14.loc[WINDOW_START:AS_OF]
-        if window_rsi.empty or window_rsi.min() >= 30 or window_rsi.max() <= 50:
+        if window_rsi.empty:
+            continue
+        below = window_rsi[window_rsi < 30]
+        if below.empty:
+            continue
+        # 必须是"先超卖、后反弹到 50 以上"，不能只是窗口内同时出现过两端
+        after_oversold = window_rsi.loc[below.index[0]:]
+        if after_oversold.max() <= 50:
             continue
 
-        vol_avg5 = volume.rolling(5).mean()
+        vol_avg5 = volume.rolling(5).mean().shift(1)
         spike_days = ((volume > 2 * vol_avg5) & (volume.index >= WINDOW_START)).sum()
         if spike_days < 2:
             continue

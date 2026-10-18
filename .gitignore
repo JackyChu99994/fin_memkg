@@ -18,3 +18,6 @@ data/market/
 
 # Agent sandbox
 workspace/
+
+# Generated task output
+result.txt

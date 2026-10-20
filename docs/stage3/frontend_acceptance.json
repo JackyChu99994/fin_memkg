@@ -1,0 +1,155 @@
+{
+  "verified_at": "2026-10-21T02:15:44+08:00",
+  "scope": "Market-data Streamlit integration, verified locally before commit.",
+  "ui_framework": "Streamlit 1.66.0",
+  "regression": {
+    "passed": 113,
+    "exit_code": 0,
+    "elapsed_seconds": 11.307,
+    "network": "external connections disabled; loopback allowed for UI tests",
+    "log": "docs/stage3/frontend_regression.txt"
+  },
+  "browser_actions": [
+    "Rendered cache and industry tabs from real local snapshots",
+    "Clicked task01 and task36 auto run buttons",
+    "Selected and ran task36 strict minute mode; failure was explicit with no fallback",
+    "Downloaded TXT, JSON, daily CSV and industry CSV; checked against selected results",
+    "Restarted local server and checked final page layout and HTTP health"
+  ],
+  "interactive_test_cases": [
+    "Missing local data is explained without running jobs",
+    "Changing cutoff excludes later rows and resets a not-yet-listed stock",
+    "Historical industries require an explicit override",
+    "Changing parent industry resets incompatible child selections",
+    "Failed run remains separate; selecting old results and rerunning the page do not start jobs"
+  ],
+  "task01": {
+    "run_id": "task01-20261021T020052176682-542b52a7",
+    "task": "task01",
+    "requested_mode": "auto",
+    "state": "completed",
+    "wall_seconds": 6.0346,
+    "calculation_seconds": 5.2489,
+    "actual_mode": null,
+    "automated_checks_passed": true,
+    "automatic_grade": {
+      "task_id": "task_01_macd_rsi_filter",
+      "commit": "3491965a26bd25798677f89cddfa0f12dc01ce32",
+      "task_file_sha256": "f6671317c619e141c84fe65f48b98443ccb67677bac34592be9d1d24eb0a30d1",
+      "scores": {
+        "file_created": 1.0,
+        "valid_codes": 1.0,
+        "count_limit": 1.0,
+        "data_fetched": 1.0,
+        "macd_computed": 1.0,
+        "rsi_computed": 1.0,
+        "ma_computed": 1.0
+      },
+      "automated_mean": 1.0,
+      "official_weights": {
+        "automated": 0.5,
+        "llm_judge": 0.5
+      },
+      "llm_judge": "NOT_RUN",
+      "overall_score": null,
+      "note": "Mean of automated checks only; not a complete hybrid benchmark score."
+    },
+    "error": null,
+    "input_snapshot": {
+      "generation": "snapshots/d3b4622d7c3c428aaaf4e0c84f3ebec5",
+      "meta_sha256": "afee3b9dae4b5f30ce0e9c2b8f13cab6be845b8f07ab6eaf4bf8cf3db36a0191",
+      "captured_at": "2026-10-21T02:00:52+08:00"
+    },
+    "summary_sha256": "099544cb83316f17a826ba5f76792cf4f35289ee1a1a8dd24e0f2c8e0abae248",
+    "output_directory": "data/market/web_runs/task01-20261021T020052176682-542b52a7"
+  },
+  "task36_auto": {
+    "run_id": "task36-20261021T020158239176-b121764f",
+    "task": "task36",
+    "requested_mode": "auto",
+    "state": "completed",
+    "wall_seconds": 4.8844,
+    "calculation_seconds": 3.9804,
+    "actual_mode": "DAILY_OHLC_APPROX",
+    "automated_checks_passed": true,
+    "automatic_grade": {
+      "task_id": "task_36_intraday_anomaly",
+      "commit": "3491965a26bd25798677f89cddfa0f12dc01ce32",
+      "task_file_sha256": "f6671317c619e141c84fe65f48b98443ccb67677bac34592be9d1d24eb0a30d1",
+      "scores": {
+        "file_created": 1.0,
+        "anomaly_type": 1.0,
+        "closing_position": 1.0,
+        "continuation_field": 1.0,
+        "intraday_attempted": 1.0
+      },
+      "automated_mean": 1.0,
+      "official_weights": {
+        "automated": 0.35,
+        "llm_judge": 0.65
+      },
+      "llm_judge": "NOT_RUN",
+      "overall_score": null,
+      "note": "Mean of automated checks only; not a complete hybrid benchmark score."
+    },
+    "error": null,
+    "input_snapshot": {
+      "generation": "snapshots/d3b4622d7c3c428aaaf4e0c84f3ebec5",
+      "meta_sha256": "afee3b9dae4b5f30ce0e9c2b8f13cab6be845b8f07ab6eaf4bf8cf3db36a0191",
+      "captured_at": "2026-10-21T02:01:58+08:00"
+    },
+    "summary_sha256": "d04cab022ec955e067a67de1396263dff28169e73641bf0b7cce5d336d44338b",
+    "output_directory": "data/market/web_runs/task36-20261021T020158239176-b121764f"
+  },
+  "task36_strict": {
+    "run_id": "task36-20261021T020331880450-dabd13dc",
+    "task": "task36",
+    "requested_mode": "minute",
+    "state": "failed",
+    "wall_seconds": 3.285,
+    "calculation_seconds": null,
+    "actual_mode": null,
+    "automated_checks_passed": false,
+    "automatic_grade": null,
+    "error": "严格分钟验收失败；未降级为日线近似。所需历史分钟缓存或其校验未满足要求。",
+    "input_snapshot": {
+      "generation": "snapshots/d3b4622d7c3c428aaaf4e0c84f3ebec5",
+      "meta_sha256": "afee3b9dae4b5f30ce0e9c2b8f13cab6be845b8f07ab6eaf4bf8cf3db36a0191",
+      "captured_at": "2026-10-21T02:03:31+08:00"
+    },
+    "summary_sha256": null,
+    "output_directory": "data/market/web_runs/task36-20261021T020331880450-dabd13dc"
+  },
+  "downloads": {
+    "task36_txt_matches_selected_run": true,
+    "task36_json_matches_selected_run": true,
+    "daily_rows": 60,
+    "daily_latest": "2026-10-20",
+    "industry_rows": 1411
+  },
+  "limitations": [
+    "Real historical minute coverage is still unavailable for the requested 2024 interval.",
+    "Auto mode uses a labelled daily approximation; LLM judges were not run.",
+    "Current industry observations are not proof of historical classifications."
+  ],
+  "source_sha256": {
+    "app.py": "33479ea8c956fba50955863296fbaff959504315a286d694a4861c520b18f778",
+    "stage3_ui.py": "33b699377cc2f5c778add2a0d14f9d952ef963a9c45e787e9d30703e1c0361ff",
+    "stage3_data_ui.py": "7253d85eaf51a450d608bec300b3b4b70e0f09c2cf442582442ae9c408aef1b9",
+    "stage3_results_ui.py": "1d8f8367ea90d17bcb78cbe8270b363d1abf980b3e165a102ab2d33de6e3c752",
+    "stage3_jobs.py": "59a9342a3ed27417e382187d9475b4803dbcaee2f4a5db31173fc45df8a0739c",
+    "tests/test_stage3_ui.py": "c98a4ec3c92b3556fea749e4ae1630e4b43c365f4a8aefa10ba7443bd039e4cb",
+    "tests/test_stage3_data_ui.py": "5501d32d91961d418e0075e0d434d7ffefeefc7b15cf2c843762a04fd343bd0b",
+    "tests/test_stage3_jobs.py": "8a4f17e161c5af8af433f88050ef81a5158584c0ddee130a75ccca833b1188b2",
+    "scripts/check_stage3.py": "ec7fa6abca760b59f904060a8a9bc7b8859157130ad6c3e2710b9842567e0fea",
+    "requirements.txt": "0e68d25322e10e9912a1e9ce1c1e84da3a7b835eaac0d3227561dbc82aebcdd2"
+  },
+  "ui_name_check": {
+    "page_title": "行情数据与验收",
+    "navigation": [
+      "行情数据与验收",
+      "金融事件与图谱"
+    ],
+    "method": "AppTest rendered the full page and asserted title/navigation with no errors."
+  }
+}

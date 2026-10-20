@@ -1,0 +1,519 @@
+{
+  "generated_at": "2026-10-21T01:37:51+08:00",
+  "scope": "Local pre-commit acceptance for the third-leg data layer; no commit or push performed.",
+  "git": {
+    "base_commit": "d87d00cb93af6a3a5f321deb277d0780b8d5aa66",
+    "branch": "feat/stage3-market-data",
+    "tested_state": "uncommitted working tree; source hashes below"
+  },
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Windows",
+    "packages": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "akshare": "1.19.1",
+      "pyarrow": "26.0.0",
+      "pytest": "9.1.1",
+      "requests": "2.34.2",
+      "beautifulsoup4": "4.15.0",
+      "xlrd": "2.0.2"
+    }
+  },
+  "snapshot_audit": {
+    "snapshot": {
+      "rows": 921433,
+      "stocks": 1411,
+      "date_min": "2024-01-02",
+      "date_max": "2026-10-20",
+      "duplicate_code_date": 0,
+      "missing_ohlcv": {
+        "open": 0,
+        "high": 0,
+        "low": 0,
+        "close": 0,
+        "volume": 0
+      },
+      "turnover_non_null_pct": 100.0,
+      "turnover_negative_rows": 0,
+      "universe_count": 1411,
+      "index_rows": 675
+    },
+    "temporal": {
+      "as_of": "2026-03-31",
+      "universe_count": 1391,
+      "excluded_post_cutoff_listings": 20,
+      "future_rows_returned": 0,
+      "historical_universe_complete": false
+    },
+    "independent_task01": {
+      "stocks_recomputed": 936,
+      "selected_codes": [
+        "300531",
+        "300825"
+      ],
+      "missing_requested_codes": [],
+      "evidence_code_set_matches": true,
+      "mismatches": [],
+      "implementation": "separate scalar arithmetic, no shared indicator functions"
+    },
+    "network_requests": 0,
+    "elapsed_seconds": 3.7736,
+    "passed": true
+  },
+  "offline_full_resume": {
+    "board": "创业板",
+    "start": "2024-01-01",
+    "end": "2026-10-21",
+    "published": true,
+    "sources": {
+      "universe": "SZSE stock_info_sz_name_code",
+      "bars": "Sina stock_zh_a_daily (qfq)",
+      "index": "Sina stock_zh_index_daily"
+    },
+    "requested_codes": 1411,
+    "resumed_codes": 1411,
+    "pending_this_run": 0,
+    "downloaded_codes": 1411,
+    "universe_complete": true,
+    "per_symbol_timeout": 15.0,
+    "built_at": "2026-10-21T01:25:29",
+    "bar_rows": 921433,
+    "date_min": "2024-01-02",
+    "date_max": "2026-10-20",
+    "index_coverage": {
+      "start": "2024-01-01",
+      "end": "2026-10-21",
+      "date_min": "2024-01-02",
+      "date_max": "2026-10-20",
+      "rows": 675
+    },
+    "known_biases": [
+      "当前股票清单按上市日过滤，不含已退市股票（幸存者偏差）",
+      "行业、股本为采集时快照，不能当作历史时点数据",
+      "前复权基准为采集时基准；历史回测不是逐时点复权数据库",
+      "区间已查询不等于每个交易日都有数据；停牌、源缺口需按实际覆盖审计"
+    ],
+    "failed_codes": 0,
+    "failures": [],
+    "failures_sample": [],
+    "elapsed_seconds": 16.39,
+    "note": "downloaded_codes is the total available partitions, including resumed ones; pending_this_run is zero."
+  },
+  "task01": {
+    "as_of": "2026-03-31",
+    "window": [
+      "2026-03-04",
+      "2026-03-31"
+    ],
+    "profile": "official_expected_plus_prompt",
+    "rsi_period": 14,
+    "lookback_per_stock": 120,
+    "universe_count": 936,
+    "missing_codes": [],
+    "coverage_complete": true,
+    "evaluated_count": 936,
+    "candidate_count": 2,
+    "written_codes": [
+      "300531",
+      "300825"
+    ],
+    "reference_overlap": [
+      "300531"
+    ],
+    "result_written_seconds": 4.8527,
+    "timeout_seconds": 300,
+    "network_requests": 0,
+    "grading": {
+      "task_id": "task_01_macd_rsi_filter",
+      "commit": "3491965a26bd25798677f89cddfa0f12dc01ce32",
+      "task_file_sha256": "f6671317c619e141c84fe65f48b98443ccb67677bac34592be9d1d24eb0a30d1",
+      "scores": {
+        "file_created": 1.0,
+        "valid_codes": 1.0,
+        "count_limit": 1.0,
+        "data_fetched": 1.0,
+        "macd_computed": 1.0,
+        "rsi_computed": 1.0,
+        "ma_computed": 1.0
+      },
+      "automated_mean": 1.0,
+      "official_weights": {
+        "automated": 0.5,
+        "llm_judge": 0.5
+      },
+      "llm_judge": "NOT_RUN",
+      "overall_score": null,
+      "note": "Mean of automated checks only; not a complete hybrid benchmark score."
+    },
+    "limitations": [
+      "Current surviving-stock universe; historical delisted securities are unavailable.",
+      "Cached qfq prices are not a historical point-in-time adjustment-factor archive.",
+      "Official prompt and expected_behavior differ; this profile applies both the window MACD/two-volume-day requirements and the same-day RSI14/MA/volume requirement.",
+      "Zero qualifying stocks are a valid computed outcome, but the official valid_codes check scores an empty file as zero."
+    ],
+    "elapsed_seconds": 4.8681,
+    "within_timeout": true
+  },
+  "task36": {
+    "task_id": "task_36_intraday_anomaly",
+    "as_of": "2024-08-22",
+    "window": [
+      "2024-08-16",
+      "2024-08-19",
+      "2024-08-20",
+      "2024-08-21",
+      "2024-08-22"
+    ],
+    "mode": "DAILY_OHLC_APPROX",
+    "reason": "Historical 30-minute cache incomplete; task prompt explicitly permits daily OHLC approximation.",
+    "method": "DAILY_OHLC_APPROX: (high-low)/previous_close > 8% OR lower wick/range > 50%; closing position > 60%; volume > 3x prior 5-day mean. Cannot establish 30-minute path, >5x same-day interval volume, or two-bar recovery.",
+    "offline": true,
+    "universe_rows": 1339,
+    "daily_codes": 1339,
+    "candidate_count": 81,
+    "confirmed_count": 63,
+    "pending_count": 10,
+    "rejected_continuation_count": 8,
+    "elapsed_seconds": 4.138,
+    "timeout_seconds": 480,
+    "within_timeout": true,
+    "official_automated_grade": {
+      "task_id": "task_36_intraday_anomaly",
+      "commit": "3491965a26bd25798677f89cddfa0f12dc01ce32",
+      "task_file_sha256": "f6671317c619e141c84fe65f48b98443ccb67677bac34592be9d1d24eb0a30d1",
+      "scores": {
+        "file_created": 1.0,
+        "anomaly_type": 1.0,
+        "closing_position": 1.0,
+        "continuation_field": 1.0,
+        "intraday_attempted": 1.0
+      },
+      "automated_mean": 1.0,
+      "official_weights": {
+        "automated": 0.35,
+        "llm_judge": 0.65
+      },
+      "llm_judge": "NOT_RUN",
+      "overall_score": null,
+      "note": "Mean of automated checks only; not a complete hybrid benchmark score."
+    },
+    "limitations": [
+      "Current universe omits historical delisted stocks.",
+      "No data after as_of used; last-day continuation remains pending.",
+      "Daily fallback is permitted approximation, not true minute capability.",
+      "Automatic grade checks format/keywords, not arithmetic correctness.",
+      "Cached daily prices are current-vintage qfq, not a point-in-time vintage."
+    ],
+    "minute_coverage": {
+      "mode": "MINUTE_30",
+      "requested_codes": 1339,
+      "covered_codes": 0,
+      "sources": {},
+      "volume_unit": "shares",
+      "adjust": "none",
+      "dates": [
+        "2024-08-16",
+        "2024-08-19",
+        "2024-08-20",
+        "2024-08-21",
+        "2024-08-22"
+      ],
+      "as_of": "2024-08-22"
+    },
+    "minute_missing_codes_count": 1339
+  },
+  "minute_source_probe": {
+    "target": [
+      "2024-08-16",
+      "2024-08-22"
+    ],
+    "attempts": [
+      {
+        "code": "300750",
+        "source": "sina",
+        "requested_end": null,
+        "endpoint": "https://quotes.sina.cn/cn/api/jsonp_v2.php/=/CN_MarketDataService.getKLineData",
+        "params": {
+          "symbol": "sz300750",
+          "scale": "30",
+          "ma": "no",
+          "datalen": "1970"
+        },
+        "rows": 1970,
+        "first": "2025-10-14T14:30:00+08:00",
+        "last": "2026-10-20T15:00:00+08:00",
+        "volume_source_unit": "shares",
+        "volume_stored_unit": "shares",
+        "adjust": "none",
+        "unit_basis": "Sina raw share units",
+        "timezone": "Asia/Shanghai",
+        "timestamp_semantics": "bar_end",
+        "fetched_at": "2026-10-21T01:26:04.496165+08:00",
+        "elapsed_seconds": 0.5204,
+        "target_range_spanned": false,
+        "status": "HISTORICAL_RANGE_UNAVAILABLE"
+      },
+      {
+        "code": "300750",
+        "source": "tencent",
+        "requested_end": null,
+        "endpoint": "https://ifzq.gtimg.cn/appstock/app/kline/mkline",
+        "params": {
+          "param": "sz300750,m30,,320"
+        },
+        "rows": 320,
+        "first": "2026-08-18T10:00:00+08:00",
+        "last": "2026-10-20T15:00:00+08:00",
+        "volume_source_unit": "lots",
+        "volume_stored_unit": "shares",
+        "adjust": "none",
+        "unit_basis": "Tencent lots convention; sample cross-source scale checked",
+        "timezone": "Asia/Shanghai",
+        "timestamp_semantics": "bar_end",
+        "fetched_at": "2026-10-21T01:26:05.930379+08:00",
+        "elapsed_seconds": 0.4483,
+        "target_range_spanned": false,
+        "status": "HISTORICAL_RANGE_UNAVAILABLE"
+      },
+      {
+        "code": "300750",
+        "source": "tencent",
+        "requested_end": "20240822",
+        "status": "SOURCE_ERROR",
+        "error": "RuntimeError: IntradayCoverageError: tencent: empty response"
+      },
+      {
+        "code": "300059",
+        "source": "sina",
+        "requested_end": null,
+        "endpoint": "https://quotes.sina.cn/cn/api/jsonp_v2.php/=/CN_MarketDataService.getKLineData",
+        "params": {
+          "symbol": "sz300059",
+          "scale": "30",
+          "ma": "no",
+          "datalen": "1970"
+        },
+        "rows": 1970,
+        "first": "2025-10-14T14:30:00+08:00",
+        "last": "2026-10-20T15:00:00+08:00",
+        "volume_source_unit": "shares",
+        "volume_stored_unit": "shares",
+        "adjust": "none",
+        "unit_basis": "Sina raw share units",
+        "timezone": "Asia/Shanghai",
+        "timestamp_semantics": "bar_end",
+        "fetched_at": "2026-10-21T01:26:08.445347+08:00",
+        "elapsed_seconds": 0.4905,
+        "target_range_spanned": false,
+        "status": "HISTORICAL_RANGE_UNAVAILABLE"
+      },
+      {
+        "code": "300059",
+        "source": "tencent",
+        "requested_end": null,
+        "endpoint": "https://ifzq.gtimg.cn/appstock/app/kline/mkline",
+        "params": {
+          "param": "sz300059,m30,,320"
+        },
+        "rows": 320,
+        "first": "2026-08-18T10:00:00+08:00",
+        "last": "2026-10-20T15:00:00+08:00",
+        "volume_source_unit": "lots",
+        "volume_stored_unit": "shares",
+        "adjust": "none",
+        "unit_basis": "Tencent lots convention; sample cross-source scale checked",
+        "timezone": "Asia/Shanghai",
+        "timestamp_semantics": "bar_end",
+        "fetched_at": "2026-10-21T01:26:09.774022+08:00",
+        "elapsed_seconds": 0.4698,
+        "target_range_spanned": false,
+        "status": "HISTORICAL_RANGE_UNAVAILABLE"
+      },
+      {
+        "code": "300059",
+        "source": "tencent",
+        "requested_end": "20240822",
+        "status": "SOURCE_ERROR",
+        "error": "RuntimeError: IntradayCoverageError: tencent: empty response"
+      }
+    ],
+    "limitations": "Sampled stocks only; endpoint range overlap is not full-market or complete-day coverage.",
+    "elapsed_seconds": 7.8153
+  },
+  "minute_source_validation": {
+    "unit_crosscheck": [
+      {
+        "code": "300750",
+        "overlapping_intervals": 320,
+        "median_normalized_volume_ratio": 1.0,
+        "max_close_difference": 0.38999999999998636,
+        "note": "Separate data providers have small OHLC/volume differences; caches never merge them."
+      },
+      {
+        "code": "300059",
+        "overlapping_intervals": 320,
+        "median_normalized_volume_ratio": 1.000011581279162,
+        "max_close_difference": 0.019999999999999574,
+        "note": "Separate data providers have small OHLC/volume differences; caches never merge them."
+      }
+    ],
+    "recent_cache_read": {
+      "mode": "MINUTE_30",
+      "requested_codes": 2,
+      "covered_codes": 2,
+      "missing": {},
+      "dates": [
+        "2026-10-14",
+        "2026-10-15",
+        "2026-10-16",
+        "2026-10-19",
+        "2026-10-20"
+      ],
+      "as_of": "2026-10-20"
+    },
+    "recent_rows": 80,
+    "historical_2024_coverage": false
+  },
+  "industry": {
+    "source": "SWS Research official history + official SW2021 dictionary",
+    "universe_count": 1411,
+    "mapped_count": 1411,
+    "coverage_pct": 100.0,
+    "missing_codes": [],
+    "conflicts": {},
+    "history_rows": 12929,
+    "point_in_time_history": false,
+    "notes": [
+      "历史文件更新日期不是公告发布时间；不能仅凭计入日期声称当时可知。",
+      "行业代码为申万官方六位分类代码，与 85xxxx.SI 行业指数代码不同。"
+    ],
+    "built_at": "2026-10-21T01:31:17+08:00",
+    "level": 3,
+    "failed_industries": 0,
+    "failures": [],
+    "elapsed_seconds": 0.719,
+    "source_url": "https://www.swsresearch.com/swindex/pdf/SwClass2021/StockClassifyUse_stock.xls",
+    "dictionary_url": "https://www.swsresearch.com/swindex/pdf/SwClass2021/SwClass.rar"
+  },
+  "field_audit": {
+    "as_of_date": "2026-10-20",
+    "checked_at": "2026-10-21T01:31:21+08:00",
+    "rows": 921433,
+    "codes": 1411,
+    "units": {
+      "price": "CNY per share, qfq in existing snapshot",
+      "volume": "shares",
+      "amount": "CNY",
+      "turnover_pct": "percentage points (1 means 1%)"
+    },
+    "turnover_missing": 0,
+    "turnover_negative": 0,
+    "turnover_over_100": 0,
+    "turnover_min": 0.0444137019495524,
+    "turnover_max": 91.38341402855369,
+    "source": {
+      "akshare_version": "1.19.1",
+      "function_sha256": "168f97acbacc65139e590476d9a22a0b763b14c31561762d8c264aaeceea8f47",
+      "historical_share_series": true,
+      "formula_volume_divided_by_shares": true,
+      "url": "https://github.com/akfamily/akshare/blob/main/akshare/stock/stock_zh_a_sina.py"
+    },
+    "notes": [
+      "换手率来自新浪历史流通股本序列，AKShare 前向填充后 volume/outstanding_share×100；不是当前 SZSE 股本近似。",
+      "数据源可能修订历史；下载时点不等于当时公告可用时点。",
+      "已有前复权 close 不能与当前股本相乘来声称准确历史市值。",
+      "可选样本仅核对来源与单位，不代表全部股票的逐行外部复核。"
+    ],
+    "samples": [
+      {
+        "code": "300001",
+        "status": "checked",
+        "passed": true,
+        "expected_rows": 20,
+        "joined_rows": 20,
+        "missing_dates": [],
+        "max_turnover_error_pct": 0.0,
+        "max_volume_error_shares": 0.0,
+        "latest_raw_close": 30.86,
+        "latest_historical_float_shares": 1031173748.0,
+        "market_cap_scope": "reconstructed from source history; historical announcement availability unverified"
+      },
+      {
+        "code": "300750",
+        "status": "checked",
+        "passed": true,
+        "expected_rows": 20,
+        "joined_rows": 20,
+        "missing_dates": [],
+        "max_turnover_error_pct": 0.0,
+        "max_volume_error_shares": 0.0,
+        "latest_raw_close": 259.08,
+        "latest_historical_float_shares": 4260617083.0,
+        "market_cap_scope": "reconstructed from source history; historical announcement availability unverified"
+      }
+    ]
+  },
+  "regression": {
+    "exit_code": 0,
+    "elapsed_seconds": 6.616,
+    "network": "disabled",
+    "live_llm_calls": 0,
+    "test_log": "docs/stage3/regression.txt",
+    "passed": 87,
+    "warnings": 0
+  },
+  "limitations": [
+    "True historical 30-minute coverage for 2024-08-16 through 2024-08-22 remains unavailable from the sampled endpoints; task36 uses the explicitly labelled daily approximation.",
+    "Current industry coverage is 100%, but historical announcement availability is not proven; strict historical reads reject later observations.",
+    "Complete historical float-market-cap data are unavailable; calculation requires raw prices and effective/available dates for historical shares.",
+    "The current universe omits delisted securities, and cached qfq prices use the acquisition-date adjustment vintage.",
+    "Official automated checks passed; LLM judge was not run and full hybrid benchmark scores remain null.",
+    "No claim of solving all 40 RealFin tasks or completing upper-level Agent/KG integration is made."
+  ],
+  "source_report_sha256": {
+    "data/market/acceptance/task01/summary.json": "e72b9e9d161b52b8adbda3d0f66b640c470a48f2b9a612d3b98f0c34ae6a94f9",
+    "data/market/acceptance/task36/summary.json": "d4d300140372e7ec0a6cfc724c2ca89075cce34cad41ed58b0b24bdfadd7ef0b",
+    "data/market/acceptance/audit.json": "169180ae09158c29efa1b4934522ad7c39e80a4a5f43d95472bf6b86a2ef3d53",
+    "data/market/acceptance/sectors.json": "51e3ebdbd41f35795ddf68ee587f19a5ad0243c9d3cd388a4c4315cebd6ca946",
+    "data/market/acceptance/fields.json": "4501dd2ef127fb2dfd8f69afc7626de84f64f2da82ce79669a53a847ba05cec6",
+    "data/market/acceptance/regression.json": "3bb7978525c1a700b90422af5ea64d2596cd36ef29112f2d9de6c983f761e921",
+    "data/market/last_attempt.json": "afee3b9dae4b5f30ce0e9c2b8f13cab6be845b8f07ab6eaf4bf8cf3db36a0191",
+    "data/market/intraday/probe_report.json": "acb927bef1a43e9195e104aefdb1b37ede281eba14885f3bc78e29bad3c34bfb",
+    "data/market/intraday/source_validation.json": "a66706227a705d897175452aff0fb31efd60aa21e666b8da0e6780b70b325640"
+  },
+  "source_code_sha256": {
+    "market_snapshot.py": "d11897b01d6206bf49e1561642d83ed3248f67343f639dc073d967523c180689",
+    "market_intraday.py": "e88fae38b8969df7549fd00b559c4b1aa653270d8c1af4f72217ef746a9bb71a",
+    "market_sectors.py": "ab2cb784af37227df632db5d65e00277cc416adbc4c7ff71f08ddb38bc060a8c",
+    "market_fields.py": "dcfe6ca9782dede88795de91e0520765cebd2984c2798538882e45a06fe671b2",
+    "requirements.txt": "e29ef17a4320b7a1ea82773d2b7079087043adf0bf3c16ea793c7d980437d028",
+    "scripts/analyze_run.py": "08d73440d61c243cb0969a469245be6bfd8f30521c89626bb96051cd9ce2d803",
+    "scripts/audit_stage3.py": "f8e67d5b5df42e404d26b69495ed3d83c06ba959bc749b69f7b17ae8ec151b63",
+    "scripts/check_api.py": "1f4493fbb164d6b01e4aaef01979516881f5e51c355ca0bb618ea9a3512ad69f",
+    "scripts/check_schemas.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "scripts/check_stage3.py": "a9d409d6dc41ce83d4b8486cbea065dc3fd2dc7a584f1a45e3b9f2449a5201b9",
+    "scripts/probe_intraday.py": "42f7651ddb6c98be5f46485dedfc99004381e5d6bc3e4652d847565200e3ef32",
+    "scripts/realfin_contract.py": "2e89a4556bb84adf3c65344f9ca7ee30126dc7706861d8005466137a8ec19999",
+    "scripts/smoke_demo.py": "3f1d2d75c7b3ea34bf5b3487532bf13805c1718a107c09af1da7556b13bc4033",
+    "scripts/stability_eval.py": "dc25fbec02e595a1b4ca46d342c8ffb3f2e8f2b170a0da5ebb4ebe8b0e2a6c01",
+    "scripts/validate_fields.py": "8811194ae4231dcfe6274344221863ea084f14daa0c564c3cc6704e07c0c431a",
+    "scripts/validate_task01.py": "ddff54f86c026d39c8470bebac8dbaeabefd16b30e5b499692afbeb3be3a2256",
+    "scripts/validate_task36.py": "8d639978d755aa8fe40c43d52813aad1c403583a2008c5a05450052f13abb8a6",
+    "ga_core/__init__.py": "dac783de563cb8db4eabb7e6cac7ba30fcf09cc4ccc3119b6ed7a0b5ffce844a",
+    "ga_core/cli.py": "5aebbd5e20718f38d7b05a3d2f10723526d271de9037526c01c0ef5715b022f2",
+    "ga_core/handler.py": "9617064faa0662e2e25d6562e26af6168253040b86e49cc7350a140eaae13e0d",
+    "ga_core/llm.py": "6c917260b6cb62403f837031c94d77ebec699248c77cb0800f8e2ba31b69feb9",
+    "ga_core/loop.py": "c09bdd0ef14a46bfc78eed59696a77d3e7505ee3774e2ae62fcd9fba038775e5",
+    "ga_core/memory.py": "f8c05d9c44862cb7d42e49b3793045e3981d821d080c87166d93c2495656cceb",
+    "ga_core/session.py": "c388b74b7fb9a1c621644f37af637b41c20e1647f9ed9d32a2ed4e75f5e7cf49",
+    "ga_core/tools.py": "7c25bc9558eff2da4194177c8b6e7e2b68fc94c71f8131238104633b38e3413e",
+    "tests/test_constraints.py": "3e011499c72d7c2b629c1871cb33e0c87cfa4d3e658fe5e6d216b6f50d37f97b",
+    "tests/test_ga_core.py": "75d27143d48496721f81d135291d8b5951d1654d70177d48151a4e65192f7837",
+    "tests/test_market_intraday.py": "0032150b14b14bbd88087ae4d2546eba298d6e9b54138561054edcddbbf2f706",
+    "tests/test_market_sectors.py": "240127a2a648c05d3292467c96989bd57f5465ff252d291c772738b15ce6d65a",
+    "tests/test_market_snapshot.py": "ad50c9165da8a77f496e4f4a32330f68b678125cc07f2bb66a8a131747a7bd5c",
+    "tests/test_p0_consistency.py": "487712a65fc7c41687a0326d86763f4b05f19a0edb095293bdf9e35a6b6a02fb",
+    "tests/test_task01.py": "e6f37a8f4b1ea149856ead45e6525b0ada027bbdc567642238f6dab4ae82d8b1"
+  }
+}

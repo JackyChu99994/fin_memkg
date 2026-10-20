@@ -119,3 +119,33 @@ QWEN_MODEL=qwen-plus
 - 逐例 / 配对 McNemar / 稳定性分析：[docs/REAL12_RESULTS_2026-10-18.md](docs/REAL12_RESULTS_2026-10-18.md)
 
 > 口径提醒：N=12、4 只股票、单模型单温度；不宣称统计显著。B1 在 `real12` 上每例只有 3 条历史文本，不是真正的长上下文压力测试；要回答“大量信息”问题，需另做 20–50 条干扰文档的 B1-Long 压力集。
+
+## 9. 行情数据层与验收（2026-10-21）
+
+本次按阶段成果交付，完成内容和剩余限制见 [阶段提交说明](docs/STAGE_DELIVERY.md)。完整操作、字段口径、历史数据限制见 [行情数据层交接](docs/STAGE3_HANDOFF.md)，任务范围见 [需求表](docs/STAGE3_REQUIREMENTS.md)，本机真实结果见 [验收摘要](docs/stage3/acceptance.json)。
+
+- 日线支持区间续传、历史上市过滤、完整快照原子发布、默认离线及显式限时补采。
+- 本机两只样本实测可获取新浪/腾讯近期 30 分钟线；task_36 的 2024 年历史范围不可得时，使用明确标注的官方允许日线近似。
+- 细分行业保留来源和观察时间；历史查询不会静默把当前分类当作过去事实。
+- task_01 固定 RSI14 与同日信号口径，官方自动评分与独立重算分别保存。
+- 测试通过隔离副本运行，防止旧测试的假模型响应污染演示缓存。
+
+```powershell
+$env:PYTHONUTF8 = "1"
+.\.venv\Scripts\python.exe scripts/realfin_contract.py --fetch
+.\.venv\Scripts\python.exe scripts/validate_task01.py
+.\.venv\Scripts\python.exe scripts/validate_task36.py
+.\.venv\Scripts\python.exe scripts/audit_stage3.py
+.\.venv\Scripts\python.exe scripts/check_stage3.py
+```
+
+验收需要先有本地日线快照；分钟来源探测见交接文档。生成数据在 `data/market/`，不提交 Git。新版本数据应通过 `load_*` 或 `snapshot_paths()` 读取，根目录旧 Parquet 仅作兼容保留。
+
+行情数据与验收功能也可以在网页操作：
+
+```powershell
+$env:PYTHONUTF8 = "1"
+.\.venv\Scripts\python.exe -m streamlit run app.py --server.address 127.0.0.1 --server.port 8501
+```
+
+打开 `http://127.0.0.1:8501`，选择“行情数据与验收”，可浏览行情缓存、筛选行业映射、运行 task_01/task_36、查看历史记录并下载结果。网页运行记录保存在忽略目录 `data/market/web_runs/`；原图谱页面可从左侧“金融事件与图谱”进入。操作说明见 [交接文档第 7 节](docs/STAGE3_HANDOFF.md#7-网页使用)。

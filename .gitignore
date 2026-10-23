@@ -1,6 +1,7 @@
 # Python virtual environment & caches
 .venv/
 __pycache__/
+.pytest_cache/
 *.py[cod]
 *$py.class
 
@@ -21,6 +22,7 @@ workspace/
 
 # Generated task output
 result.txt
+intraday_signal.txt
 
 # Generated response caches and local eval runs
 memory/eval_llm_cache/
@@ -28,6 +30,7 @@ memory/demo_cache/
 memory/graph_demo_cache/
 memory/L4_archive/qwen_demo_cache/
 memory/L4_archive/runs/
+memory/L4_archive/cache/
 
 # uv cache used for local dependency installs
 .uv-cache/

@@ -40,6 +40,17 @@ st.set_page_config(
 )
 st.markdown("<style>.block-container{padding-top:1.1rem;padding-bottom:1rem;}</style>", unsafe_allow_html=True)
 
+workspace_view = st.sidebar.radio(
+    "工作台",
+    ["行情数据与验收", "金融事件与图谱"],
+    key="workspace_view",
+)
+if workspace_view == "行情数据与验收":
+    from stage3_ui import render_stage3
+
+    render_stage3()
+    st.stop()
+
 PRESET_EVENTS = {
     "300308.SZ": [
         (

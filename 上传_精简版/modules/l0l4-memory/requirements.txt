@@ -1,0 +1,15 @@
+# ---- 核心 ----
+streamlit>=1.32,<2
+pyvis>=0.3.2
+networkx>=2.8
+
+# ---- 图谱 ----
+neo4j>=5.20
+
+# ---- 大模型 ----
+openai>=1.30
+
+# ---- 数据 ----
+akshare>=1.14
+pandas>=2.1,<3          # pandas 3.x 的 Arrow 字符串后端会让 akshare 部分接口报错
+numpy>=1.26

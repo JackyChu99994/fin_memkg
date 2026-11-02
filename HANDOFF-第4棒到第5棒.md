@@ -1,4 +1,11 @@
+Technical completion (2026-11-02): [stage-five team handoff](HANDOFF-stage5-to-team.md) and [final study](docs/stage5-completion-20261102.md). PPT remains deferred; the original handoff below is historical.
+
 Fin-MemKG · 交接文档（第 4 棒 → 第 5 棒）
+Audit notice (2026-10-31): this original historical handoff has stale file counts,
+missing companion resources and unverified result expectations. See
+[the whole-project audit](docs/project-audit-20261031.md) and use
+[the revised stage-five contract](docs/stage5-revised-handoff.md) for current work.
+
 交接日期：2026-10-28
 上游基线：https://github.com/JackyChu99994/fin_memkg  提交 61f8d6a（2026-10-23，PR #6 合并后）
 本棒新增：modules/l0l4-memory/（92 个文件）+ 本文件

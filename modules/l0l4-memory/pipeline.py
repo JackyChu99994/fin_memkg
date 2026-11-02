@@ -14,11 +14,12 @@ from datetime import datetime
 from typing import Optional
 
 import l4_archive as l4
-from config import (DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL,
+from config import (get_llm_config,
                     ENTITY_TYPES, POLARITY, REL_TYPES, STATUS_ACTIVE,
                     STATUS_INVALID)
 from l0_rules import EXTRACT_SYSTEM, OUTPUT_CONTRACT, render_l0_block
 from l1_router import RoutingDecision, route
+from thesis_scope import infer_scope, can_invalidate, can_reinforce
 
 
 # --------------------------------------------------------------------------- #
@@ -30,6 +31,7 @@ class RunResult:
     date: str
     mode: str                      # llm | heuristic
     routing: RoutingDecision
+    llm_meta: dict = field(default_factory=dict)
     events: list[dict] = field(default_factory=list)
     added: list[dict] = field(default_factory=list)
     invalidated: list[dict] = field(default_factory=list)
@@ -81,7 +83,9 @@ def build_prompt(news: str, decision: RoutingDecision, theses: str, date: str) -
 
 【事件日期】{date}
 请抽取“会改变投资逻辑”的事件。若新闻与股价/产业链/财务/监管/供需无关，输出 {{"events": []}}。
-同一主体对同一对象若方向相反，请把旧逻辑写进 invalidates。
+Only invalidate an earlier fact when the same subject, event, metric, reporting period,
+comparison basis and geography are contradicted by explicit evidence. Opposite sentiment,
+a different metric, or a later reporting period alone does not invalidate an earlier fact.
 {OUTPUT_CONTRACT}"""
 
 
@@ -89,7 +93,7 @@ def build_prompt(news: str, decision: RoutingDecision, theses: str, date: str) -
 # LLM 调用与解析
 # --------------------------------------------------------------------------- #
 def _chat(client, model: str, prompt: str, *, thinking: bool | None = None,
-          max_tokens: int = 1200) -> str:
+          max_tokens: int = 1200, metadata: dict | None = None) -> str:
     kwargs = {
         "model": model,
         "messages": [{"role": "system", "content": EXTRACT_SYSTEM},
@@ -101,37 +105,42 @@ def _chat(client, model: str, prompt: str, *, thinking: bool | None = None,
         # DeepSeek V4 起默认开启思考模式；结构化抽取不需要推理链，显式关掉更便宜也更快
         kwargs["extra_body"] = {"thinking": {"type": "disabled"}}
     resp = client.chat.completions.create(**kwargs)
+    if metadata is not None:
+        usage = getattr(resp, "usage", None)
+        metadata.update(response_model=getattr(resp, "model", None),
+            response_id=getattr(resp, "id", None), finish_reason=resp.choices[0].finish_reason,
+            usage={"input_tokens": usage.prompt_tokens, "output_tokens": usage.completion_tokens} if usage else {})
+    if resp.choices[0].finish_reason != "stop":
+        raise ValueError("Incomplete model response; no extracted facts were committed")
     return resp.choices[0].message.content or ""
 
 
-def call_llm(prompt: str, timeout: float = 60.0) -> str:
-    if not DEEPSEEK_API_KEY:
-        raise RuntimeError("未配置 DEEPSEEK_API_KEY（可在 .env 中设置）")
+def call_llm(prompt: str, timeout: float = 60.0, metadata: dict | None = None) -> str:
+    settings = get_llm_config()
+    if not settings["api_key"]:
+        raise RuntimeError("Configure the selected provider's API key; choose rule demo explicitly for offline work")
     from openai import OpenAI
-
-    client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_BASE_URL, timeout=timeout)
-    try:
-        return _chat(client, DEEPSEEK_MODEL, prompt)
-    except Exception as exc:
-        msg = str(exc).lower()
-        # 配置的旧模型名被下线时（如 deepseek-chat 退役），退回 flash 的非思考模式
-        if DEEPSEEK_MODEL == "deepseek-flash" or not any(
-                k in msg for k in ("model", "not found", "400", "404", "invalid")):
-            raise
-        return _chat(client, "deepseek-flash", prompt, thinking=False)
+    if metadata is not None:
+        metadata.update(provider=settings["provider"], requested_model=settings["model"])
+    client = OpenAI(api_key=settings["api_key"], base_url=settings["base_url"], timeout=timeout, max_retries=0)
+    return _chat(client, settings["model"], prompt, metadata=metadata)
 
 
 def parse_events(raw: str) -> list[dict]:
     text = (raw or "").strip().replace("```json", "").replace("```", "").strip()
     if not text:
-        return []
+        raise ValueError("Empty extraction response")
     m = re.search(r"\{.*\}|\[.*\]", text, re.S)
     if not m:
         raise ValueError("输出中找不到 JSON")
     data = json.loads(m.group(0))
     if isinstance(data, dict):
-        data = data.get("events", [])
-    return data if isinstance(data, list) else []
+        if "events" not in data:
+            raise ValueError("Missing events field")
+        data = data["events"]
+    if not isinstance(data, list) or not all(isinstance(event, dict) for event in data):
+        raise ValueError("Events must be a list of objects")
+    return data
 
 
 def validate_events(events: list[dict], date: str) -> tuple[list[dict], list[dict]]:
@@ -251,28 +260,37 @@ def commit(store, events: list[dict], *, date: str, stock_code: str,
     added: list[dict] = []
     invalidated: list[dict] = []
     reinforced: list[dict] = []
+    # 一条新闻只归档一次（L4），多条三元组共享同一个 archive_ref
+    rec = l4.append_event(text=news, stock_code=stock_code, stock_name=events[0].get("source", "") if events else "",
+                          publish_date=date, source="pipeline")
     if not events:
         return added, invalidated, reinforced
-
-    # 一条新闻只归档一次（L4），多条三元组共享同一个 archive_ref
-    rec = l4.append_event(text=news, stock_code=stock_code, stock_name=events[0].get("source", ""),
-                          publish_date=date, source="pipeline")
     for idx, ev in enumerate(events, start=1):
+        ev["thesis_scope"] = json.dumps(infer_scope(ev, news), ensure_ascii=False, sort_keys=True)
         ev["event_id"] = f"{rec['event_id']}-{idx:02d}"
         by = rec["event_id"]  # 推翻者指向 L4 新闻记录，永远可回溯
+        explicit_ids = set(ev.get("invalidates", []) or [])
 
         # 反转：同主体+同对象，方向相反的旧逻辑 -> 已被证伪
         if ev["relation"] in POLARITY:
             opposite = "利空事件" if ev["relation"] == "利好事件" else "利好事件"
-            hits = store.invalidate(source=ev["source"], target=ev["target"], rel_type=opposite,
-                                    by_event=by, date=ev["date"],
-                                    reason=f"被新事件推翻：{ev['reason'][:40]}")
-            for h in hits:
-                invalidated.append({"event_id": h, "by": by,
-                                    "source": ev["source"], "target": ev["target"]})
+            for old in store.edges():
+                if old["status"] != STATUS_ACTIVE or old["type"] != opposite:
+                    continue
+                requested = old["id"] in explicit_ids
+                if not can_invalidate(old, ev, news, explicitly_requested=requested):
+                    if requested:
+                        ev.setdefault("blocked_invalidates", []).append(old["id"])
+                    continue
+                hits = store.invalidate(event_id=old["id"], by_event=by, date=ev["date"], reason=f"Scoped correction: {ev['reason'][:40]}")
+                for h in hits:
+                    invalidated.append({"event_id": h, "by": by,
+                                        "source": ev["source"], "target": ev["target"]})
 
         # 同向证据：合并到已有活跃边，而不是再画一条重复的边
-        same = store.find_active(ev["source"], ev["target"], ev["relation"])
+        same = next((old for old in store.edges() if old["status"] == STATUS_ACTIVE
+                     and old["source_name"] == ev["source"] and old["target_name"] == ev["target"]
+                     and old["type"] == ev["relation"] and can_reinforce(old, ev)), None)
         if same:
             store.reinforce(same["id"], ev, rec["ref"])
             reinforced.append({"event_id": same["id"], "source": ev["source"],
@@ -282,12 +300,6 @@ def commit(store, events: list[dict], *, date: str, stock_code: str,
         store.upsert_event(ev, rec["ref"])
         added.append({**ev, "archive_ref": rec["ref"]})
 
-        for old_id in ev.get("invalidates", []) or []:
-            hits = store.invalidate(event_id=old_id, by_event=by, date=ev["date"],
-                                    reason=f"显式证伪：{ev['reason'][:40]}")
-            for h in hits:
-                invalidated.append({"event_id": h, "by": by,
-                                    "source": ev["source"], "target": ev["target"]})
     return added, invalidated, reinforced
 
 
@@ -344,6 +356,13 @@ def run_news(news: str, store, *, use_llm: bool = True, date: Optional[str] = No
              stock_code: str = "", hops: int = 1, trace: Optional[list] = None) -> RunResult:
     date = (date or datetime.now().strftime("%Y-%m-%d"))[:10]
     trace = trace if trace is not None else []
+    # A mutable current graph cannot reconstruct earlier valid-time states.
+    # Require an isolated chronological replay instead of leaking later facts.
+    for existing in store.edges():
+        props = existing.get("props", {})
+        for stamp in (props.get("date", ""), props.get("invalidated_at", "")):
+            if stamp and str(stamp)[:10] > date:
+                raise ValueError("Stored graph contains later facts or updates; replay historical analysis in an isolated dated store")
 
     decision = route(news)
     _trace(trace, "① 感知 / L1 路由", decision.explain(),
@@ -358,14 +377,13 @@ def run_news(news: str, store, *, use_llm: bool = True, date: Optional[str] = No
     if use_llm:
         try:
             result.prompt = build_prompt(news, decision, theses, date)
-            result.llm_raw = call_llm(result.prompt)
+            result.llm_raw = call_llm(result.prompt, metadata=result.llm_meta)
             events = parse_events(result.llm_raw)
             result.mode = "llm"
-            _trace(trace, "③ 推演 / DeepSeek 抽取", f"模型返回 {len(events)} 条候选事件")
+            _trace(trace, "LLM extraction", f"Model returned {len(events)} candidate events", metadata=result.llm_meta)
         except Exception as exc:
-            _trace(trace, "③ 推演 / DeepSeek 抽取", f"调用失败：{exc}（回退到规则引擎，UI 会明确标注）")
-            events = heuristic_extract_with_theses(news, decision, date, store)
-            result.mode = "heuristic"
+            _trace(trace, "LLM extraction failed", type(exc).__name__)
+            raise RuntimeError("Configured LLM extraction failed; no rule result was committed. Select rule demo explicitly if needed.") from exc
     else:
         events = heuristic_extract_with_theses(news, decision, date, store)
         _trace(trace, "③ 推演 / 规则引擎（0 Token）", f"生成 {len(events)} 条候选事件")
@@ -383,6 +401,9 @@ def run_news(news: str, store, *, use_llm: bool = True, date: Optional[str] = No
                                             stock_code=stock_code or
                                             (decision.stocks[0].code if decision.stocks else "000000"))
     result.added, result.invalidated, result.reinforced = added, invalidated, reinforced
+    blocked = sum(len(event.get("blocked_invalidates", [])) for event in valid)
+    if blocked:
+        _trace(trace, "Scope guard", f"Blocked {blocked} unsupported cross-scope invalidation requests; facts remain separate.")
     _trace(trace, "⑤ 行动 / 写 L2 + L4",
            f"新增 {len(added)} 条边，强化 {len(reinforced)} 条，证伪 {len(invalidated)} 条旧边")
 

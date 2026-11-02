@@ -40,8 +40,8 @@ META_RULES = [
     {
         "id": "L0-6",
         "name": "状态机（Thesis State Machine）",
-        "text": f"关系状态只能是 {STATUSES}。新事件若与旧逻辑方向相反，"
-                "必须把旧关系置为“已被证伪”并记录 invalidated_by，而不是删除它。",
+        "text": f"Allowed states: {STATUSES}. Invalidate only explicit contradictions of the same scoped fact; "
+                "different metrics, periods, or sentiment can coexist. Record invalidated_by and preserve history.",
     },
 ]
 

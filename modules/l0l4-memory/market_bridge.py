@@ -28,7 +28,7 @@ import pandas as pd
 
 from config import ROOT
 
-DATA_DIR = Path(os.environ.get("MEMKG_MARKET_DIR", str(ROOT / "data" / "market")))
+DATA_DIR = Path(os.environ.get("MEMKG_MARKET_DIR", str(ROOT.parents[1] / "data" / "market")))
 
 CODE_KEYS = ("code", "股票代码", "证券代码", "symbol", "ts_code")
 DATE_KEYS = ("date", "日期", "trade_date", "时间")
@@ -38,12 +38,22 @@ INDUSTRY_KEYS = ("industry_l3", "sw_l3", "三级行业", "industry", "行业")
 
 def _paths(data_dir: Optional[Path] = None) -> dict:
     d = Path(data_dir) if data_dir else DATA_DIR
+    root = d
+    pointer = d / "CURRENT.json"
+    if pointer.exists():
+        manifest = json.loads(pointer.read_text(encoding="utf-8"))
+        generation = manifest.get("generation")
+        if not isinstance(generation, str) or not generation:
+            raise ValueError("Snapshot pointer has no valid generation")
+        root = (d / generation).resolve()
+        if not root.is_relative_to(d.resolve()):
+            raise ValueError("Snapshot generation must remain inside the market directory")
     return {
         "dir": d,
-        "bars": d / "bars.parquet",
-        "index": d / "index.parquet",
-        "universe": d / "universe.parquet",
-        "meta": d / "meta.json",
+        "bars": root / "bars.parquet",
+        "index": root / "index.parquet",
+        "universe": root / "universe.parquet",
+        "meta": root / "meta.json",
     }
 
 

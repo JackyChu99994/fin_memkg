@@ -17,7 +17,7 @@ import l4_archive as l4
 import market_bridge
 import viz
 from agent import MemoryAgent
-from config import (APP_TITLE, DEEPSEEK_MODEL, STATUS_ACTIVE, has_llm)
+from config import (APP_TITLE, LLM_MODEL, LLM_PROVIDER, STATUS_ACTIVE, has_llm)
 from store import get_store
 
 st.set_page_config(page_title="Fin-MemKG", page_icon="🧠", layout="wide")
@@ -88,10 +88,10 @@ with st.sidebar:
             st.rerun()
 
     st.divider()
-    use_llm = st.toggle("调用 DeepSeek 抽取", value=has_llm(),
+    use_llm = st.toggle(f"Use {LLM_PROVIDER} extraction", value=has_llm(),
                         help="关闭后使用 0-Token 规则引擎，答辩断网也能演示")
     if not has_llm() and use_llm:
-        st.warning("未检测到 DEEPSEEK_API_KEY，将自动回退到规则引擎。")
+        st.warning("The selected provider is not configured. Use the explicit rule-demo button for offline work.")
 
     if st.button("♻️ 重建演示图谱", use_container_width=True):
         demo_data.seed(store, reset=True)
@@ -122,11 +122,12 @@ with left:
     code = st.text_input("主标的代码", value=st.session_state.center, max_chars=6,
                          help="留空则使用 L1 路由命中的第一只标的")
 
-    run_llm = st.button("🚀 运行 Agent（大模型）", type="primary", use_container_width=True, disabled=not news.strip())
+    run_llm = st.button(f"Run Agent ({LLM_PROVIDER})", type="primary", use_container_width=True,
+                        disabled=not news.strip() or not use_llm or not has_llm())
     run_rule = st.button("🧪 只跑规则引擎（0 Token）", use_container_width=True, disabled=not news.strip())
 
     if run_llm or run_rule:
-        agent = MemoryAgent(store, use_llm=run_llm and use_llm)
+        agent = MemoryAgent(store, use_llm=bool(run_llm))
         with st.spinner("感知 → 路由 → 抽取 → 写回 → 复盘 …"):
             try:
                 st.session_state.prev_sg = store.subgraph(code=code or None, hops=1)
@@ -197,6 +198,12 @@ with right:
             unsafe_allow_html=True,
         )
         st.markdown("")
+        recalled = getattr(last, "archive_evidence", [])
+        if recalled:
+            with st.expander("Original evidence recall including news not in the graph"):
+                for source in recalled:
+                    st.caption(f"{source['id']} | {source['published_at']}")
+                    st.text(source["text"])
         if last.study:
             s1, s2, s3 = st.columns(3)
             s1.metric("CAR", f"{last.study['car_pct']:+.1f}%")
@@ -247,7 +254,7 @@ with t1:
                                         "耗时(ms)": s.ms, "状态": "✅" if s.ok else "❌"}
                                        for s in st.session_state.last.steps]),
                          hide_index=True, use_container_width=True)
-            st.caption(f"总耗时 {st.session_state.last.elapsed_ms} ms · 模型 {DEEPSEEK_MODEL}")
+            st.caption(f"Elapsed {st.session_state.last.elapsed_ms} ms | Model {LLM_MODEL}")
         else:
             st.write("尚未运行。")
 with t2:

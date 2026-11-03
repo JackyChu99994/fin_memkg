@@ -1,4 +1,49 @@
+Final technical completion (2026-11-02): read [the stage-five team handoff](HANDOFF-stage5-to-team.md) for completed work, known limitations and prioritized follow-up, and [the complete study](docs/stage5-completion-20261102.md) for results. The 23-question development run and 91-card reserved AI-silver comparison are complete. PPT is deferred; earlier readiness counts below are historical.
+
 # Fin-MemKG · Qwen 动态金融知识图谱与投资论点记忆更新工作台
+
+New to the project? Start with the [plain-language project overview](docs/project-overview.md): problem, earlier stages, architecture, experiments and limitations.
+
+2026-10-31 technical delivery: [findings and limitations](docs/stage5-final-results.md)
+and [delivery scope](docs/stage5-delivery.md). The root app now includes a read-only
+**Evidence research** graph view. The expanded silver-reference run covers 39
+schemes and 77 questions; it shows no accuracy/cost advantage over lexical RAG.
+PPT work is deferred. Do not treat silver references as independently human-verified gold.
+
+New challenge-source acquisition: [80 new companies / 599 original announcements](docs/diverse-source-collection.md).
+The V7 bank now has 91 source-audited AI-silver cards. The completed comparison
+uses 251 eligible sources; independent human gold is not claimed.
+
+2026-11-01: [development identity audit](docs/development-identity-audit.md) adds
+23 source-bound drafts from 20 development companies and three missing originals.
+These are unreviewed development diagnostics, not new held-out scores.
+
+[Typed field contracts and scoring](docs/typed-disclosure-evaluation.md) now
+prepare blind prompts, distinguish units/approval conditions and retain failures.
+Synthetic scorer checks are not model performance results.
+
+[Real typed-task development pilot](docs/typed-development-pilot.md): 46 Qwen
+calls expose format, metadata and source-role failures. The second pass has 19/23
+strict draft matches; this is full-context debugging, not a RAG/memory gain.
+
+[Source-bound scheme catalogue](docs/source-scheme-catalogue.md) is integrated
+as a new tab in Evidence research. It derives candidate identities from original
+sources at the selected cutoff, without overwriting model outputs or old scores.
+
+[Reserved bank construction](docs/reserved-question-bank.md) documents 91
+source-bound review candidates across 48 companies. They remain unqualified;
+the failed 60-call AI reference-generation attempt and all shortages are retained.
+
+Current scope and acceptance: [whole-project audit](docs/project-audit-20261031.md)
+and [revised stage-five assignment](docs/stage5-revised-handoff.md). The root already
+contains a financial KG application; the fourth-stage module is a parallel
+prototype. Prior numbers below are not proof of topology or general memory gains.
+
+Stage five adds [extraction and memory evaluation](modules/l0l4-memory/experiments/README.md),
+an [annotation protocol](modules/l0l4-memory/docs/stage5-annotation-guide.md), and a
+[technical report draft](modules/l0l4-memory/docs/stage5-report.md).
+The new experiments require reviewed labels and a locally configured model;
+their offline tests do not establish a live-model performance improvement.
 
 本项目固定使用阿里云 DashScope 提供的 **Qwen OpenAI 兼容 Chat Completions 接口**，完成面向金融事件的**单事件结构化要素抽取 + L2 多空论点状态机更新 + L3 经验分位校准 + 两跳三节点产业链传导**推演演示与同底座真实大模型评测。
 

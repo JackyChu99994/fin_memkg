@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 
 import l3_event_study as l3
+import l4_archive as l4
 from pipeline import RunResult, predict, run_news
 
 
@@ -33,6 +34,7 @@ class AgentResult:
     study_error: str = ""
     decision: dict = field(default_factory=dict)
     steps: list[Step] = field(default_factory=list)
+    archive_evidence: list[dict] = field(default_factory=list)
     elapsed_ms: int = 0
 
 
@@ -64,6 +66,7 @@ class MemoryAgent:
             {"name": "l2.commit", "kind": "行动", "desc": "写 L2 图谱 + L4 归档，旧逻辑置为已证伪"},
             {"name": "l3.event_study", "kind": "计算", "desc": "市场模型 CAR，检验结论是否被市场认可"},
             {"name": "l2.predict", "kind": "决策", "desc": "多空打分 + 证据链 → 方向与置信度"},
+            {"name": "l4.recall", "kind": "Evidence", "desc": "Retrieve dated originals, including news with no extracted graph edge"},
         ]
 
     def run(self, news: str, *, date: str | None = None, stock_code: str = "",
@@ -80,11 +83,13 @@ class MemoryAgent:
                           int((time.perf_counter() - t) * 1000)))
 
         center = stock_code or (run.routing.stocks[0].code if run.routing.stocks else "")
+        evidence = l4.recall(news, as_of=date, stock_code=center or None)
+        steps.append(Step("L4 evidence recall", "l4.recall", f"{len(evidence)} original sources; graph absence does not imply news absence"))
         study, err = {}, ""
         if with_study and center:
             t = time.perf_counter()
             try:
-                study = l3.event_study(center, date)
+                study = l3.event_study(center, date, as_of=date)
                 steps.append(Step("复盘 / L3 事件研究", "l3.event_study",
                                   f"CAR {study['car_pct']:+.2f}%（{study['source']}，{study['n_days']} 天）",
                                   int((time.perf_counter() - t) * 1000)))
@@ -95,6 +100,8 @@ class MemoryAgent:
         pred = run.prediction or predict(self.store, code=center)
         key = (pred.get("direction", "中性"), (study.get("car_pct", 0) or 0) > 0)
         action, why = DECISION_TABLE.get(key, ("观察", "证据不足，继续跟踪。"))
+        if not study or study.get("source") == "synthetic" or not study.get("complete"):
+            action, why = "观察", "The validation window is incomplete or real prices are missing; no action is inferred from unavailable future returns."
 
         decision = {
             "action": action,
@@ -106,8 +113,9 @@ class MemoryAgent:
             "car_verdict": l3.verdict(study, pred.get("direction", "中性")) if study else "",
             "reasons": pred.get("reasons", []),
             "counts": {k: pred.get(k) for k in ("n_active_bull", "n_active_bear", "n_invalidated")},
+            "evidence_status": "GRAPH_EMPTY_ARCHIVE_AVAILABLE" if not (pred.get("n_active_bull", 0) + pred.get("n_active_bear", 0)) and evidence else "ARCHIVE_AVAILABLE" if evidence else "NO_ARCHIVE_EVIDENCE",
         }
-        return AgentResult(run=run, study=study, study_error=err, decision=decision,
+        return AgentResult(run=run, study=study, study_error=err, decision=decision, archive_evidence=evidence,
                            steps=steps, elapsed_ms=int((time.perf_counter() - t_start) * 1000))
 
 

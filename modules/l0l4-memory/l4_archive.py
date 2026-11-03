@@ -104,6 +104,23 @@ def iter_events(stock_code: Optional[str] = None) -> list[dict]:
     return recs
 
 
+def recall(query: str, *, as_of: str, stock_code: Optional[str] = None,
+           limit: int = 3, path: Optional[Path] = None) -> list[dict]:
+    """Retrieve original evidence even when extraction produced no graph edge."""
+    from evidence_retrieval import known_by, top_documents
+    archive = Path(path) if path is not None else NEWS_JSONL
+    documents = []
+    for rec in _iter_jsonl(archive):
+        if stock_code and rec.get("stock_code") != stock_code:
+            continue
+        if not known_by(rec.get("publish_date", ""), as_of):
+            continue
+        documents.append({"id": rec["event_id"], "text": rec["text"],
+            "published_at": rec["publish_date"], "source": rec.get("source", ""),
+            "source_url": rec.get("url", ""), "archive_ref": make_ref(rec["event_id"], archive)})
+    return top_documents(query, documents, limit)
+
+
 def resolve(ref: str) -> Optional[dict]:
     """L2 关系 -> L4 原文。UI 里“点击证据”走的就是这个函数。"""
     if not ref or "#" not in ref:

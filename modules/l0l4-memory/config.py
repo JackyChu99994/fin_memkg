@@ -29,10 +29,13 @@ def _load_dotenv(path: Path = ROOT / ".env") -> None:
         if not line or line.startswith("#") or "=" not in line:
             continue
         key, val = line.split("=", 1)
-        os.environ.setdefault(key.strip(), val.strip().strip('"').strip("'"))
+        value = val.strip().strip('"').strip("'")
+        if value:
+            os.environ.setdefault(key.strip(), value)
 
 
 _load_dotenv()
+_load_dotenv(ROOT.parents[1] / ".env")
 
 # ---------- 凭据 ----------
 NEO4J_URI = os.getenv("NEO4J_URI", "")
@@ -43,6 +46,30 @@ NEO4J_DATABASE = os.getenv("NEO4J_DATABASE", "")
 DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY", "")
 DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com/v1")
 DEEPSEEK_MODEL = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
+
+
+def get_llm_config() -> dict:
+    """Select one explicit provider; never switch models after a failed call.
+
+    Process variables override module .env, which overrides repository .env.
+    An existing root Qwen configuration is shared with the original workbench.
+    """
+    provider = os.getenv("MEMKG_LLM_PROVIDER", "").strip().lower()
+    if not provider:
+        provider = "qwen" if os.getenv("QWEN_API_KEY") else "deepseek"
+    defaults = {"qwen": ("https://dashscope.aliyuncs.com/compatible-mode/v1", "qwen-plus"),
+                "deepseek": ("https://api.deepseek.com/v1", "deepseek-chat")}
+    if provider not in defaults:
+        raise ValueError("MEMKG_LLM_PROVIDER must be qwen or deepseek")
+    prefix = provider.upper()
+    url, model = defaults[provider]
+    return {"provider": provider, "api_key": os.getenv(prefix + "_API_KEY", ""),
+            "base_url": os.getenv(prefix + "_BASE_URL", url),
+            "model": os.getenv(prefix + "_MODEL", model)}
+
+
+LLM_PROVIDER = get_llm_config()["provider"]
+LLM_MODEL = get_llm_config()["model"]
 
 # auto: 有 Neo4j 配置就连 Aura，否则退到本地 JSON（答辩现场断网也能演示）
 STORE_MODE = os.getenv("MEMKG_STORE", "auto").lower()
@@ -69,7 +96,7 @@ APP_TITLE = "Fin-MemKG · 股票量化情报工作台（L0–L4 分层记忆）"
 
 
 def has_llm() -> bool:
-    return bool(DEEPSEEK_API_KEY)
+    return bool(get_llm_config()["api_key"])
 
 
 def has_neo4j() -> bool:

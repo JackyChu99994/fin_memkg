@@ -38,9 +38,18 @@ def _config(task: str) -> dict:
 
 
 def _write_status(directory: Path, status: dict) -> None:
-    temporary = directory / "status.json.tmp"
+    temporary = directory / f"status.{uuid.uuid4().hex}.json.tmp"
     temporary.write_text(json.dumps(status, ensure_ascii=False, indent=2), encoding="utf-8")
-    temporary.replace(directory / "status.json")
+    # Windows readers/scanners may briefly deny atomic replacement. Keep the
+    # previous complete status visible; never report a failed write as success.
+    for attempt in range(6):
+        try:
+            temporary.replace(directory / "status.json")
+            return
+        except PermissionError:
+            if attempt == 5:
+                raise
+            time.sleep(0.025)
 
 
 def _text(value) -> str:

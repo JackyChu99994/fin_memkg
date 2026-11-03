@@ -42,13 +42,18 @@ st.markdown("<style>.block-container{padding-top:1.1rem;padding-bottom:1rem;}</s
 
 workspace_view = st.sidebar.radio(
     "工作台",
-    ["行情数据与验收", "金融事件与图谱"],
+    ["行情数据与验收", "金融事件与图谱", "Evidence research"],
     key="workspace_view",
 )
 if workspace_view == "行情数据与验收":
     from stage3_ui import render_stage3
 
     render_stage3()
+    st.stop()
+
+if workspace_view == "Evidence research":
+    from stage5_research_ui import render_research
+    render_research()
     st.stop()
 
 PRESET_EVENTS = {

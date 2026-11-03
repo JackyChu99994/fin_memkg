@@ -131,6 +131,7 @@ class LocalStore(BaseStore):
             "reason": ev.get("reason", ""),
             "date": ev.get("date", ""),
             "archive_ref": archive_ref,
+            "thesis_scope": ev.get("thesis_scope"),
         })
         current = self.data["edges"].get(eid)
         self.data["edges"][eid] = {
@@ -220,7 +221,7 @@ class LocalStore(BaseStore):
         refs = props.get("evidence_refs") or []
         if isinstance(refs, str):
             refs = [refs]
-        refs.append(archive_ref)
+        refs = list(dict.fromkeys(refs + ([props["archive_ref"]] if props.get("archive_ref") else []) + [archive_ref]))
         props.update({
             "date": ev.get("date", props.get("date", "")),
             "confidence": max(float(props.get("confidence", 0)), float(ev.get("confidence", 0.7))),
@@ -273,6 +274,7 @@ class Neo4jStore(BaseStore):
             "date": ev.get("date", ""),
             "archive_ref": archive_ref,
             "event_id": ev["event_id"],
+            "thesis_scope": ev.get("thesis_scope"),
         })
         cypher = f"""
         MERGE (a:`{stype}` {{name: $source}})
@@ -415,8 +417,11 @@ class Neo4jStore(BaseStore):
         })
         cypher = """
         MATCH ()-[r]->() WHERE coalesce(r.event_id, elementId(r)) = $eid
+        WITH r, reduce(refs = [], item IN coalesce(r.evidence_refs, []) +
+            CASE WHEN r.archive_ref IS NULL THEN [] ELSE [r.archive_ref] END + [$ref] |
+            CASE WHEN item IN refs THEN refs ELSE refs + [item] END) AS evidence_refs
         SET r += $props
-        SET r.evidence_refs = coalesce(r.evidence_refs, []) + $ref
+        SET r.evidence_refs = evidence_refs
         SET r.n_evidence = size(r.evidence_refs)
         """
         with self._session() as s:

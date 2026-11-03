@@ -1,5 +1,14 @@
 # 模块 B · L0-L4 记忆层
 
+2026-10-31 correction: the root is also a financial KG application, not only a
+market-data module. See [the project audit](../../docs/project-audit-20261031.md).
+This module now reuses repository Qwen settings, supports an explicit
+`MEMKG_LLM_PROVIDER` override and fails LLM mode without switching models or rules.
+Use the explicit rule-demo button for offline demonstrations. The original
+feature/experiment claims below are historical descriptions, not newly verified
+performance. Legacy setup instructions describe DeepSeek; an existing root
+Qwen `.env` can be reused without running that setup script.
+
 > 本目录是模块 B；仓库根目录是模块 A（行情数据层）。两层通过 `data/market/*.parquet` 对接。
 
 # Fin-MemKG · L0–L4 分层记忆的股票量化情报系统（课程 Demo 包）
